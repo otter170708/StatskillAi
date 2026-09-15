@@ -1,0 +1,23 @@
+NATIONAL SAMPLE SURVEY (NSS) - 79TH ROUND
+OPERATIONAL GUIDELINES ON FIELD SCRUTINY, SAMPLING FRAMEWORK, AND DATA VALIDATION
+Ministry of Statistics and Programme Implementation (MoSPI), Government of India
+
+1. INTRODUCTION AND SAMPLING DESIGN
+The primary objective of the NSS 79th Round is the comprehensive collection of socioeconomic indicators across rural and urban sectors. 
+- Sampling Frame: The rural frame comprises Census 2011 villages. The urban frame relies on Urban Frame Survey (UFS) blocks.
+- Sample Design: Stratified two-stage design is employed. First Stage Units (FSUs) are villages/UFS blocks selected via Probability Proportional to Size with Replacement (PPSWR). Ultimate Stage Units (USUs) are households selected through Circular Systematic Sampling (CSS).
+
+2. FIELD SCRUTINY PROTOCOLS & SCHEDULE VERIFICATION
+Field Investigators (FIs) and Supervisory Officers (SOs) must adhere strictly to the following validation rules:
+- Cross-Schedule Consistency: Total household consumer expenditure reported in Schedule 1.0 must not conflict with reported annual household income brackets in Schedule 0.0.
+- Mandatory Re-visit Mandate: If a sample household is temporarily locked during the initial visit, the Field Investigator MUST make at least TWO additional re-visits on different days before categorizing the household as 'Casualty' or 'Substitute'.
+- Casualty Substitution: Substitution of sample units is permitted only after explicit written concurrence from the Supervisory Officer, selecting the designated spare unit from the second-stage sampling list in sequential order.
+
+3. OUTLIER SCRUTINY & HANDLING DATA ANOMALIES
+- Energy Expenditure Scrutiny: When an enterprise or establishment reports zero electricity expenditure despite positive industrial output, the investigator must physically verify alternative captive power sources (e.g., diesel generators, solar installations) and document explicit remarks in Schedule Block 3. Arbitrary zero entry or premature imputation without field inspection is prohibited.
+- Outlier Thresholds: Any expenditure or production metric deviating by more than 3 standard deviations from the district median must be flagged for supervisory audit and re-interview.
+
+4. CONFIDENTIALITY AND ETHICAL COMPLIANCE
+Under Section 9 of the Collection of Statistics Act, 2008:
+- All respondent data collected is strictly confidential and protected from disclosure in legal proceedings or administrative penalties.
+- Microdata released for public research must undergo k-anonymity masking (k >= 5) and removal of direct geographic identifiers below district level.

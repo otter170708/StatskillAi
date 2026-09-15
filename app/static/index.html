@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StatSkill AI | iGOT Karmayogi Capacity Building Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: { 950:'#05080f',900:'#080d18',800:'#0e1623',700:'#141f30',600:'#1a283d' },
+            ember: { 300:'#fcd34d',400:'#fbbf24',500:'#f59e0b',600:'#d97706' },
+            brand: '#f59e0b'
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans"','Inter','system-ui','sans-serif'],
+            mono: ['"IBM Plex Mono"','ui-monospace','monospace']
+          },
+          animation: {
+            'fade-in':'fadeIn 0.3s ease-out',
+            'slide-up':'slideUp 0.35s ease-out',
+            'pulse-soft':'pulseSoft 2s ease-in-out infinite',
+            'shimmer':'shimmer 1.5s infinite',
+          },
+          keyframes: {
+            fadeIn:{'0%':{opacity:0},'100%':{opacity:1}},
+            slideUp:{'0%':{opacity:0,transform:'translateY(12px)'},'100%':{opacity:1,transform:'translateY(0)'}},
+            pulseSoft:{'0%,100%':{opacity:1},'50%':{opacity:0.5}},
+            shimmer:{'0%':{backgroundPosition:'-200% 0'},'100%':{backgroundPosition:'200% 0'}},
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: #05080f;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(14,26,51,0.5) 0%, transparent 60%);
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #080d18; }
+    ::-webkit-scrollbar-thumb { background: #1a283d; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b55; }
+
+    .card {
+      background: linear-gradient(135deg, rgba(14,22,35,0.95) 0%, rgba(8,13,24,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(12px);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover { border-color: rgba(245,158,11,0.12); box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 12px 40px rgba(245,158,11,0.05); }
+
+    .card-glow-amber { box-shadow: 0 0 24px rgba(245,158,11,0.1), 0 1px 3px rgba(0,0,0,0.4); }
+    .card-glow-emerald { box-shadow: 0 0 24px rgba(16,185,129,0.08), 0 1px 3px rgba(0,0,0,0.4); }
+    .card-glow-red { box-shadow: 0 0 24px rgba(239,68,68,0.08), 0 1px 3px rgba(0,0,0,0.4); }
+    .card-glow-sky { box-shadow: 0 0 24px rgba(14,165,233,0.08), 0 1px 3px rgba(0,0,0,0.4); }
+
+    .header-glass {
+      background: rgba(5,8,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 1px 30px rgba(0,0,0,0.5);
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      box-shadow: 0 0 20px rgba(245,158,11,0.3);
+    }
+
+    .step-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap; cursor: pointer;
+    }
+    .step-pill.active { background: linear-gradient(135deg, #f59e0b22, #ea580c18); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+    .step-pill.done { border-color: rgba(16,185,129,0.3); color: #34d399; background: rgba(16,185,129,0.06); }
+    .step-pill.inactive { border-color: rgba(255,255,255,0.06); color: #64748b; }
+    .step-pill.inactive:hover { border-color: rgba(245,158,11,0.2); color: #94a3b8; }
+    .step-dot { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+    .step-dot.active { background: #f59e0b; color: #05080f; }
+    .step-dot.done { background: #10b981; color: #05080f; }
+    .step-dot.inactive { background: rgba(255,255,255,0.06); color: #475569; }
+    .step-divider { width: 24px; height: 1px; background: rgba(255,255,255,0.07); flex-shrink: 0; }
+
+    select option { background: #0e1623; color: #e2e8f0; }
+    .custom-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;
+    }
+
+    .btn-primary { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #05080f; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 2px 12px rgba(245,158,11,0.25); }
+    .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); box-shadow: 0 4px 20px rgba(245,158,11,0.4); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-ghost { border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; transition: all 0.2s ease; }
+    .btn-ghost:hover { border-color: rgba(245,158,11,0.3); color: #e2e8f0; }
+
+    .option-btn { width:100%; text-align:left; padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.07); background:rgba(14,22,35,0.6); color:#cbd5e1; font-size:14px; transition:all 0.18s ease; display:flex; align-items:center; gap:10px; }
+    .option-btn:hover { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.05); color: #e2e8f0; }
+    .option-btn.selected { border-color: #f59e0b; background: rgba(245,158,11,0.1); color: #fde68a; }
+    .option-key { width:26px; height:26px; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; background:rgba(255,255,255,0.06); color:#64748b; transition:all 0.18s ease; }
+    .option-btn.selected .option-key { background: #f59e0b; color: #05080f; }
+
+    .material-card { padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(14,22,35,0.5); cursor:pointer; transition:all 0.2s ease; display:flex; align-items:flex-start; gap:12px; }
+    .material-card:hover { border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.04); }
+    .material-card.selected { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.07); }
+
+    .progress-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height:100%; border-radius:99px; transition:width 0.6s cubic-bezier(0.4,0,0.2,1); }
+
+    .conf-btn { border-radius:10px; border:1px solid rgba(255,255,255,0.07); padding:10px 8px; text-align:center; transition:all 0.18s ease; cursor:pointer; }
+    .conf-btn.conf-disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .toast { position:fixed; bottom:24px; right:24px; z-index:9999; padding:12px 18px; border-radius:12px; font-size:13px; border:1px solid; display:flex; align-items:center; gap:10px; animation:slideUp 0.3s ease-out; box-shadow:0 8px 32px rgba(0,0,0,0.4); max-width:360px; }
+    .toast-success { background: rgba(5,46,22,0.95); border-color: rgba(16,185,129,0.4); color: #34d399; }
+    .toast-error   { background: rgba(63,7,7,0.95);  border-color: rgba(239,68,68,0.4);  color: #f87171; }
+    .toast-info    { background: rgba(3,7,18,0.95);   border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+
+    .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; }
+
+    .drop-zone { border:2px dashed rgba(255,255,255,0.1); border-radius:16px; padding:48px 24px; text-align:center; cursor:pointer; transition:all 0.2s ease; }
+    .drop-zone:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.03); }
+
+    [x-show] { transition: opacity 0.25s ease; }
+
+    .gap-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:600; }
+
+    .seg-btn { flex:1; padding:8px 4px; border-radius:8px; font-size:14px; font-weight:600; border:1px solid rgba(255,255,255,0.07); background:transparent; color:#64748b; transition:all 0.2s ease; cursor:pointer; }
+    .seg-btn.active { background:linear-gradient(135deg,#f59e0b,#d97706); border-color:transparent; color:#05080f; box-shadow:0 2px 8px rgba(245,158,11,0.3); }
+
+    .rec-card { display:flex; flex-direction:column; gap:12px; padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(14,22,35,0.5); transition:all 0.2s ease; }
+    .rec-card:hover { border-color: rgba(245,158,11,0.2); }
+    @media (min-width: 640px) { .rec-card { flex-direction: row; align-items: center; } }
+
+    /* ════════════════════ LIGHT MODE ════════════════════ */
+    body.theme-light { background:#f8fafc; color:#1e293b; background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(217,119,6,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(226,232,240,0.6) 0%, transparent 60%); }
+    body.theme-light ::-webkit-scrollbar-track { background: #f1f5f9; }
+    body.theme-light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+    body.theme-light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    body.theme-light .header-glass { background:rgba(255,255,255,0.94); border-bottom:1px solid #e2e8f0; box-shadow:0 1px 12px rgba(15,23,42,0.05); }
+    body.theme-light .card { background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(15,23,42,0.04),0 6px 18px rgba(15,23,42,0.02); backdrop-filter:none; }
+    body.theme-light .card:hover { border-color:#cbd5e1; box-shadow:0 2px 8px rgba(15,23,42,0.06),0 10px 24px rgba(15,23,42,0.04); }
+    body.theme-light .card-glow-amber { box-shadow:0 0 20px rgba(217,119,6,0.08),0 1px 3px rgba(15,23,42,0.04); }
+    body.theme-light .card-glow-emerald { box-shadow:0 0 20px rgba(16,185,129,0.08),0 1px 3px rgba(15,23,42,0.04); }
+    body.theme-light .card-glow-red { box-shadow:0 0 20px rgba(239,68,68,0.08),0 1px 3px rgba(15,23,42,0.04); }
+    body.theme-light .card-glow-sky { box-shadow:0 0 20px rgba(14,165,233,0.08),0 1px 3px rgba(15,23,42,0.04); }
+
+    body.theme-light .text-white { color: #0f172a !important; }
+    body.theme-light .text-slate-100 { color: #0f172a !important; }
+    body.theme-light .text-slate-200 { color: #1e293b !important; }
+    body.theme-light .text-slate-300 { color: #334155 !important; }
+    body.theme-light .text-slate-400 { color: #475569 !important; }
+    body.theme-light .text-slate-500 { color: #64748b !important; }
+
+    body.theme-light .bg-ink-950 { background-color: #f8fafc !important; }
+    body.theme-light .bg-ink-900 { background-color: #f1f5f9 !important; }
+    body.theme-light .bg-ink-800 { background-color: #ffffff !important; }
+    body.theme-light .bg-ink-700 { background-color: #f8fafc !important; }
+    body.theme-light .bg-ink-600 { background-color: #e2e8f0 !important; }
+
+    body.theme-light .border-white\/5,
+    body.theme-light .border-white\/6,
+    body.theme-light .border-white\/8,
+    body.theme-light .border-white\/10,
+    body.theme-light .border-white\/12,
+    body.theme-light .border-ink-800 { border-color: #e2e8f0 !important; }
+
+    body.theme-light .btn-ghost { border-color:#cbd5e1; color:#334155; background:#ffffff; }
+    body.theme-light .btn-ghost:hover { border-color:#94a3b8; color:#0f172a; background:#f8fafc; }
+
+    body.theme-light select option { background:#ffffff; color:#0f172a; }
+    body.theme-light .custom-select { background-color:#ffffff; color:#1e293b; border-color:#cbd5e1; }
+
+    body.theme-light .option-btn { background:#ffffff; border-color:#e2e8f0; color:#1e293b; }
+    body.theme-light .option-btn:hover { border-color:#cbd5e1; background:#f8fafc; color:#0f172a; }
+    body.theme-light .option-btn.selected { border-color:#d97706; background:rgba(245,158,11,0.08); color:#92400e; }
+    body.theme-light .option-key { background:#f1f5f9; color:#475569; }
+    body.theme-light .option-btn.selected .option-key { background:#d97706; color:#ffffff; }
+
+    body.theme-light .conf-btn { background:#ffffff; border-color:#e2e8f0; color:#1e293b; }
+    body.theme-light .conf-btn:hover:not(.conf-disabled) { background:#f8fafc; border-color:#cbd5e1; }
+    /* FIX: light mode confidence selected borders — use !important to override default */
+    body.theme-light .conf-btn.conf-sel-high   { border-color:#10b981 !important; background:rgba(16,185,129,0.1) !important; }
+    body.theme-light .conf-btn.conf-sel-medium { border-color:#f59e0b !important; background:rgba(245,158,11,0.1) !important; }
+    body.theme-light .conf-btn.conf-sel-low    { border-color:#ef4444 !important; background:rgba(239,68,68,0.1)  !important; }
+
+    body.theme-light .step-pill.inactive { border-color:#e2e8f0; color:#64748b; background:#ffffff; }
+    body.theme-light .step-pill.inactive:hover { border-color:#cbd5e1; color:#334155; }
+    body.theme-light .step-dot.inactive { background:#e2e8f0; color:#64748b; }
+    body.theme-light .step-divider { background:#e2e8f0; }
+
+    body.theme-light .material-card { background:#ffffff; border-color:#e2e8f0; }
+    body.theme-light .material-card:hover { border-color:#cbd5e1; background:#f8fafc; }
+    body.theme-light .material-card.selected { border-color:#d97706; background:rgba(245,158,11,0.05); }
+
+    body.theme-light .progress-bar { background: #e2e8f0; }
+
+    body.theme-light .drop-zone { border-color:#cbd5e1; background:#f8fafc; }
+    body.theme-light .drop-zone:hover { border-color:#d97706; background:rgba(245,158,11,0.03); }
+
+    body.theme-light .rec-card { background:#ffffff; border-color:#e2e8f0; }
+    body.theme-light .rec-card:hover { border-color:#cbd5e1; }
+
+    body.theme-light .seg-btn { border-color:#e2e8f0; color:#64748b; background:#ffffff; }
+    body.theme-light .seg-btn.active { background:linear-gradient(135deg,#f59e0b,#d97706); color:#05080f; }
+
+    body.theme-light .skeleton { background:linear-gradient(90deg,rgba(0,0,0,0.04) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.04) 75%); }
+
+    /* FIX: light mode scenario box (was showing dark bg making text invisible) */
+    body.theme-light .scenario-box { background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%) !important; border-color:#93c5fd !important; }
+    body.theme-light .scenario-box p,
+    body.theme-light .scenario-box span { color:#1e293b !important; }
+    body.theme-light .scenario-box .text-sky-400 { color:#1d4ed8 !important; }
+
+    /* FIX: light mode question text */
+    body.theme-light .question-text { color:#0f172a !important; }
+
+    /* FIX: light mode reasoning/answer-key boxes */
+    body.theme-light .reasoning-box { background:#f8fafc !important; border-color:#e2e8f0 !important; }
+    body.theme-light .reasoning-box strong,
+    body.theme-light .reasoning-box p { color:#334155 !important; }
+
+    /* FIX: light mode gap card in Identified Skill Gaps */
+    body.theme-light .gap-card-item { background:linear-gradient(135deg,#fff1f2,#fef2f2) !important; border-color:#fca5a5 !important; }
+    body.theme-light .gap-card-item span.text-white { color:#0f172a !important; }
+
+    /* ════════════════════ TIMER ════════════════════ */
+    .quiz-timer { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:10px; font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:600; background:rgba(14,22,35,0.8); border:1px solid rgba(255,255,255,0.08); transition:all 0.3s ease; color:#e2e8f0; }
+    .quiz-timer.timer-warning { border-color:rgba(245,158,11,0.5); background:rgba(245,158,11,0.08); color:#fbbf24; }
+    .quiz-timer.timer-danger  { border-color:rgba(239,68,68,0.5);  background:rgba(239,68,68,0.1);  color:#f87171; animation:pulseSoft 1s ease-in-out infinite; }
+    body.theme-light .quiz-timer { background:#ffffff; border-color:#e2e8f0; color:#1e293b; }
+    body.theme-light .quiz-timer.timer-warning { border-color:#f59e0b; background:rgba(245,158,11,0.08); color:#92400e; }
+    body.theme-light .quiz-timer.timer-danger  { border-color:#ef4444; background:rgba(239,68,68,0.08); color:#b91c1c; }
+
+    /* ════════════════════ CONTENT SELECTION ════════════════════ */
+    .content-item-card { padding:16px; border-radius:14px; border:2px solid rgba(255,255,255,0.07); background:rgba(14,22,35,0.5); cursor:pointer; transition:all 0.2s ease; display:flex; flex-direction:column; gap:10px; }
+    .content-item-card:hover { border-color:rgba(245,158,11,0.35); background:rgba(245,158,11,0.05); }
+    .content-item-card.item-selected { border-color:#f59e0b; background:rgba(245,158,11,0.1); }
+    .content-item-card.item-completed { border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.05); }
+    .content-check { width:20px; height:20px; border-radius:6px; border:2px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; flex-shrink:0; }
+    .content-item-card.item-selected .content-check { background:#f59e0b; border-color:#f59e0b; }
+    .content-check.bg-emerald-500 { background:#10b981; border-color:#10b981; }
+    body.theme-light .content-item-card { background:#ffffff; border-color:#e2e8f0; }
+    body.theme-light .content-item-card:hover { border-color:#f59e0b; background:rgba(245,158,11,0.04); }
+    body.theme-light .content-item-card.item-selected { border-color:#d97706; background:rgba(245,158,11,0.07); }
+    body.theme-light .content-item-card.item-completed { border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.05); }
+    body.theme-light .content-check { border-color:#cbd5e1; }
+    body.theme-light .content-item-card.item-selected .content-check { background:#d97706; border-color:#d97706; }
+    body.theme-light .content-check.bg-emerald-500 { background:#10b981; border-color:#10b981; }
+
+    /* ════════════════════ QUESTION TYPES ════════════════════ */
+    /* True / False */
+    .tf-btn { flex:1; padding:16px 12px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.1); background:rgba(14,22,35,0.5); cursor:pointer; transition:all 0.18s ease; text-align:center; font-size:15px; font-weight:600; color:#94a3b8; }
+    .tf-btn:hover { border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05); color:#e2e8f0; }
+    .tf-btn.tf-true.tf-selected  { border-color:#10b981; background:rgba(16,185,129,0.1); color:#34d399; }
+    .tf-btn.tf-false.tf-selected { border-color:#ef4444; background:rgba(239,68,68,0.1);  color:#f87171; }
+    body.theme-light .tf-btn { background:#ffffff; border-color:#e2e8f0; color:#334155; }
+    body.theme-light .tf-btn:hover { border-color:#cbd5e1; background:#f8fafc; }
+    body.theme-light .tf-btn.tf-true.tf-selected  { border-color:#10b981; background:rgba(16,185,129,0.08); color:#065f46; }
+    body.theme-light .tf-btn.tf-false.tf-selected { border-color:#ef4444; background:rgba(239,68,68,0.08);  color:#991b1b; }
+
+    /* Fill blank / Short answer / Essay text */
+    .answer-input { width:100%; padding:13px 16px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.1); background:rgba(14,22,35,0.6); color:#e2e8f0; font-size:14px; outline:none; transition:border-color 0.2s; font-family:'IBM Plex Sans',sans-serif; }
+    .answer-input:focus { border-color:#f59e0b; }
+    .answer-textarea { width:100%; padding:13px 16px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.1); background:rgba(14,22,35,0.6); color:#e2e8f0; font-size:14px; outline:none; transition:border-color 0.2s; resize:vertical; font-family:'IBM Plex Sans',sans-serif; line-height:1.7; }
+    .answer-textarea:focus { border-color:#f59e0b; }
+    body.theme-light .answer-input  { background:#ffffff; border-color:#cbd5e1; color:#1e293b; }
+    body.theme-light .answer-input:focus  { border-color:#d97706; }
+    body.theme-light .answer-textarea { background:#ffffff; border-color:#cbd5e1; color:#1e293b; }
+    body.theme-light .answer-textarea:focus { border-color:#d97706; }
+
+    /* Match the following */
+    .match-pair { display:grid; grid-template-columns:1fr 24px 1fr; gap:8px; align-items:center; }
+    .match-item { padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(14,22,35,0.4); color:#cbd5e1; font-size:13px; line-height:1.4; }
+    .match-select { width:100%; padding:10px 28px 10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.1); background:rgba(14,22,35,0.6); color:#e2e8f0; font-size:13px; outline:none; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; }
+    .match-select:focus { border-color:#f59e0b; }
+    body.theme-light .match-item { background:#f1f5f9; border-color:#e2e8f0; color:#334155; }
+    body.theme-light .match-select { background-color:#ffffff; border-color:#cbd5e1; color:#1e293b; }
+    body.theme-light .match-select option { background:#ffffff; color:#0f172a; }
+
+    /* Essay upload zone */
+    .essay-upload-zone { border:2px dashed rgba(255,255,255,0.12); border-radius:12px; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s ease; }
+    .essay-upload-zone:hover { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.03); }
+    .essay-upload-zone.has-file { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.05); }
+    body.theme-light .essay-upload-zone { border-color:#cbd5e1; background:#f8fafc; }
+    body.theme-light .essay-upload-zone:hover { border-color:#f59e0b; }
+    body.theme-light .essay-upload-zone.has-file { border-color:#10b981; background:rgba(16,185,129,0.05); }
+
+    /* Question type badge */
+    .qtype-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:600; font-family:'IBM Plex Mono',monospace; letter-spacing:0.05em; }
+
+    /* Tab switch overlay */
+    .tab-warn-overlay { position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,0.78); backdrop-filter:blur(8px); }
+
+    /* National Government Ribbon & Print Styles */
+    .national-ribbon { height: 4px; width: 100%; background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%, #138808 100%); }
+    
+    @media print {
+      body * { visibility: hidden !important; }
+      #aparDossierPrintArea, #aparDossierPrintArea * { visibility: visible !important; }
+      #aparDossierPrintArea {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 24px !important;
+        box-shadow: none !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-ink-950 text-slate-200 min-h-screen flex flex-col" x-data="statskillApp()" x-init="initApp()">
+
+  <!-- ═══════════════ NATIONAL TRICOLOR ACCENT ═══════════════ -->
+  <div class="national-ribbon"></div>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header class="header-glass sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+      <!-- Branding with Ministry Emblem & Hackathon Badge -->
+      <div class="flex items-center gap-2.5 flex-shrink-0">
+        <div class="logo-icon w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base text-ink-950 tracking-tight select-none shadow-md shadow-amber-500/20">
+          🏛️
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <h1 class="text-base font-bold text-white leading-none tracking-tight" x-text="i18n.title">StatSkill AI</h1>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider font-mono">Grand Finale '26</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5 font-mono" x-text="i18n.sub">iGOT Karmayogi · MoSPI Govt. of India</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons & Controls -->
+      <div class="flex items-center gap-2 flex-wrap justify-end">
+        <!-- 🎯 Grand Finale Live Demo Button -->
+        <button type="button" @click="startGrandFinaleDemo()" class="btn-primary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-bold shadow-lg shadow-amber-500/25 animate-pulse-soft">
+          <span>🎯</span>
+          <span class="hidden sm:inline">Grand Finale</span>
+          <span>Live Demo</span>
+        </button>
+
+        <!-- Multilingual Bharat Selector -->
+        <select x-model="currentLang" @change="switchLanguage()" class="custom-select bg-ink-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 border border-white/10 outline-none focus:border-ember-500">
+          <option value="en">English (EN)</option>
+          <option value="hi">हिन्दी (HI)</option>
+          <option value="ta">தமிழ் (TA)</option>
+          <option value="te">తెలుగు (TE)</option>
+          <option value="bn">বাংলা (BN)</option>
+        </select>
+
+        <!-- Officer Persona Selector -->
+        <select x-model="selectedLearnerId" @change="switchLearner()" class="hidden md:block custom-select bg-ink-800 text-slate-300 text-xs rounded-lg px-2.5 py-1.5 border border-white/8 outline-none focus:border-ember-500 max-w-[180px] truncate">
+          <template x-for="l in learners" :key="l.learner_id">
+            <option :value="l.learner_id" x-text="`${l.name} (${l.role.split(' ')[0]})`"></option>
+          </template>
+        </select>
+
+        <!-- AI Engine Status Pill -->
+        <button type="button" @click="showAiSettings = true" class="hidden lg:flex btn-ghost text-[11px] px-2.5 py-1.5 rounded-lg items-center gap-1.5 font-mono" title="Click to view AI Engine Architecture">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">Engine:</span>
+          <span class="text-ember-400 font-semibold" x-text="aiEngineShortLabel">MoSPI Engine</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button type="button" @click="toggleTheme()" class="btn-ghost text-xs px-2 py-1.5 rounded-lg flex items-center gap-1" :title="theme === 'dark' ? 'Light Mode' : 'Dark Mode'">
+          <template x-if="theme === 'dark'"><i data-lucide="sun" class="w-3.5 h-3.5 text-amber-400"></i></template>
+          <template x-if="theme === 'light'"><i data-lucide="moon" class="w-3.5 h-3.5 text-slate-600"></i></template>
+        </button>
+
+        <!-- Streak & Karma -->
+        <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-white/8 bg-ink-800 text-xs">
+          <i data-lucide="flame" class="w-3.5 h-3.5 text-ember-500"></i>
+          <span class="text-white font-semibold font-mono" x-text="headerStreak"></span>
+        </div>
+        <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-white/8 bg-ink-800 text-xs">
+          <i data-lucide="star" class="w-3.5 h-3.5 text-ember-400"></i>
+          <span class="text-white font-semibold font-mono" x-text="headerKarma"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ GRAND FINALE FLOATING TOUR BANNER ═══════════════ -->
+    <div x-show="isGrandFinaleTour" class="bg-gradient-to-r from-amber-950/95 via-ink-900/95 to-slate-900/95 border-t border-b border-amber-500/40 px-4 py-2.5 backdrop-blur shadow-2xl animate-slide-up" style="display:none;">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center flex-shrink-0 text-sm">
+            🎯
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-amber-300 uppercase tracking-wider font-mono">Grand Finale Judge Pitch Tour</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Persona: Rajesh Sharma (JSO)</span>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-0.5">
+              <span x-show="activeTab === 'upload'">1. Real-world NSSO 79th Round Ingestion. Click "Generate Assessment" below to proceed.</span>
+              <span x-show="activeTab === 'quiz'">2. Scenario Scrutiny Dilemma: Use "🔊 Read Scenario" for tablet voice narration, or click "⚡ Auto-Submit Judge Scenario"!</span>
+              <span x-show="activeTab === 'results'">3. Confidence-Weighted Gap Diagnosis &amp; FRAC Radar Chart live! Click "Export APAR Dossier" to review official Ministry Certificate.</span>
+              <span x-show="activeTab === 'dashboard'">4. Continuous Learning Journey &amp; MoSPI APAR Ledger synchronization.</span>
+              <span x-show="activeTab === 'sme'">5. Human-in-the-loop SME Audit Gatekeeper ensuring question quality.</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 self-end sm:self-center">
+          <template x-if="activeTab === 'quiz'">
+            <button type="button" @click="autoFillJudgeDemoAnswers()" class="btn-primary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-bold shadow-lg shadow-amber-500/30">
+              <span>⚡ Auto-Submit Judge Scenario</span>
+            </button>
+          </template>
+          <template x-if="activeTab === 'results'">
+            <button type="button" @click="openAparDossierModal()" class="btn-primary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-bold shadow-lg shadow-amber-500/30">
+              <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+              <span>Export APAR Dossier</span>
+            </button>
+          </template>
+          <button type="button" @click="isGrandFinaleTour = false" class="btn-ghost text-xs px-2 py-1 rounded-lg text-slate-400 hover:text-white" title="Exit Tour">
+            ✕ Close
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Step Nav -->
+    <nav class="max-w-6xl mx-auto px-4 sm:px-6 pb-3 overflow-x-auto">
+      <div class="flex items-center gap-1 min-w-max">
+        <template x-for="(step, i) in steps" :key="step.id">
+          <div class="flex items-center gap-1">
+            <button type="button" @click="goTab(step.id)" class="step-pill"
+              :class="activeTab === step.id ? 'active' : (completedTabs.includes(step.id) ? 'done' : 'inactive')">
+              <span class="step-dot" :class="activeTab === step.id ? 'active' : (completedTabs.includes(step.id) ? 'done' : 'inactive')">
+                <template x-if="completedTabs.includes(step.id) && activeTab !== step.id">
+                  <i data-lucide="check" class="w-2.5 h-2.5"></i>
+                </template>
+                <template x-if="!(completedTabs.includes(step.id) && activeTab !== step.id)">
+                  <span x-text="i + 1"></span>
+                </template>
+              </span>
+              <span x-text="step.label"></span>
+            </button>
+            <div x-show="i < steps.length - 1" class="step-divider"></div>
+          </div>
+        </template>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+
+    <!-- ── 1. INGEST ── -->
+    <div x-show="activeTab === 'upload'" class="animate-slide-up">
+
+      <!-- Main upload form (hidden when content selection shown) -->
+      <div x-show="!showContentSelection" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Material Selection -->
+        <section class="card rounded-2xl p-6">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-7 h-7 rounded-lg bg-ember-500/15 flex items-center justify-center">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-ember-400"></i>
+            </div>
+            <h2 class="text-sm font-semibold text-white">Training Material</h2>
+          </div>
+          <!-- Mode toggle -->
+          <div class="flex gap-2 p-1 bg-ink-800 rounded-xl mb-5">
+            <button type="button" @click="ingestMode = 'preset'" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" :class="ingestMode === 'preset' ? 'bg-ember-500 text-ink-950 shadow-lg' : 'text-slate-400 hover:text-slate-200'">MoSPI Pre-loaded Manuals</button>
+            <button type="button" @click="ingestMode = 'upload'" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" :class="ingestMode === 'upload' ? 'bg-ember-500 text-ink-950 shadow-lg' : 'text-slate-400 hover:text-slate-200'">Custom Upload</button>
+          </div>
+          <!-- Preset list -->
+          <div x-show="ingestMode === 'preset'" class="space-y-2.5">
+            <template x-for="mat in materials" :key="mat.material_id">
+              <label class="material-card" :class="selectedMaterialId === mat.material_id ? 'selected' : ''">
+                <div class="mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" :class="selectedMaterialId === mat.material_id ? 'bg-ember-500/20' : 'bg-white/5'">
+                  <i data-lucide="file-text" class="w-4 h-4" :class="selectedMaterialId === mat.material_id ? 'text-ember-400' : 'text-slate-500'"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <input type="radio" class="hidden" :value="mat.material_id" x-model="selectedMaterialId">
+                  <p class="text-sm font-medium text-white leading-snug" x-text="mat.title"></p>
+                  <div class="flex flex-wrap gap-1 mt-1.5">
+                    <template x-for="tag in (mat.topic_tags || [])" :key="tag">
+                      <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/6 font-mono" x-text="tag"></span>
+                    </template>
+                  </div>
+                </div>
+                <div class="flex-shrink-0">
+                  <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all" :class="selectedMaterialId === mat.material_id ? 'border-ember-500 bg-ember-500' : 'border-slate-600'">
+                    <div x-show="selectedMaterialId === mat.material_id" class="w-1.5 h-1.5 rounded-full bg-ink-950"></div>
+                  </div>
+                </div>
+              </label>
+            </template>
+            <template x-if="!materials.length">
+              <div class="space-y-2.5">
+                <div class="skeleton h-16 w-full"></div>
+                <div class="skeleton h-16 w-full opacity-60"></div>
+                <div class="skeleton h-16 w-full opacity-30"></div>
+              </div>
+            </template>
+          </div>
+          <!-- Upload zone -->
+          <div x-show="ingestMode === 'upload'" class="drop-zone" @click="$refs.fileInput.click()">
+            <input type="file" x-ref="fileInput" @change="handleFileUpload($event)" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.txt">
+            <div class="w-14 h-14 rounded-2xl bg-ember-500/10 border border-ember-500/20 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="upload-cloud" class="w-7 h-7 text-ember-400"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-200">Upload an official document, manual, or document image</p>
+            <p class="text-xs text-slate-400 mt-1.5">PDF, PNG, JPG, JPEG, or TXT &nbsp;·&nbsp; up to 15 MB</p>
+            <p class="text-[11px] text-ember-400/90 mt-1 font-mono">AI extracts text &amp; generates custom assessment to build your daily streak!</p>
+            <div class="mt-4 inline-flex items-center gap-1.5 text-xs text-ember-400 border border-ember-500/30 rounded-lg px-3.5 py-1.5 bg-ember-500/8 font-medium">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              Choose document or image (.png, .jpg, .jpeg, .pdf)
+            </div>
+          </div>
+        </section>
+
+        <!-- Assessment Config -->
+        <section class="card rounded-2xl p-6 flex flex-col">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-7 h-7 rounded-lg bg-sky-500/15 flex items-center justify-center">
+              <i data-lucide="settings-2" class="w-3.5 h-3.5 text-sky-400"></i>
+            </div>
+            <h2 class="text-sm font-semibold text-white">Assessment Configuration</h2>
+          </div>
+          <div class="space-y-5 flex-1">
+            <div>
+              <label class="block text-[11px] uppercase tracking-widest text-slate-500 mb-2 font-mono">Officer Role / Statistical Domain</label>
+              <select x-model="quizConfig.role" class="w-full custom-select bg-ink-800 border border-white/8 rounded-xl p-3 text-sm text-white outline-none focus:border-ember-500 transition-colors">
+                <option value="Junior Statistical Officer (JSO)">Junior Statistical Officer (JSO) - FOD Field Scrutiny</option>
+                <option value="Statistical Assistant">Statistical Assistant - State DES &amp; Primary Reporting</option>
+                <option value="Senior Data Analyst">Senior Data Analyst - National Accounts Division</option>
+                <option value="Agricultural Statistical Officer">Agricultural Statistical Officer - Crop &amp; DES Agri-Stats</option>
+                <option value="Price &amp; Index Statistician (CPI/WPI)">Price &amp; Index Statistician (CPI/WPI) - Price Statistics</option>
+                <option value="Health &amp; Demographic Data Analyst">Health &amp; Demographic Data Analyst - NFHS / Demographics</option>
+                <option value="Industrial Statistics Investigator">Industrial Statistics Investigator - ASI &amp; Manufacturing</option>
+                <option value="Data Science &amp; Survey IT Specialist">Data Science &amp; Survey IT Specialist - Computer Centre</option>
+                <option value="Supervisory Officer (SO)">Supervisory Officer (SO) - Quality Audit &amp; Governance</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] uppercase tracking-widest text-slate-500 mb-2 font-mono">Difficulty Level</label>
+              <select x-model="quizConfig.difficulty" class="w-full custom-select bg-ink-800 border border-white/8 rounded-xl p-3 text-sm text-white outline-none focus:border-ember-500 transition-colors">
+                <option value="basic">Basic</option>
+                <option value="medium">Medium</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] uppercase tracking-widest text-slate-500 mb-2 font-mono">Question Set Size</label>
+              <div class="flex gap-2">
+                <template x-for="n in ['3','5','10']" :key="n">
+                  <button type="button" @click="quizConfig.numQuestions = n" class="seg-btn" :class="quizConfig.numQuestions === n ? 'active' : ''" x-text="n + ' Qs'"></button>
+                </template>
+              </div>
+            </div>
+            <!-- Reward estimate -->
+            <div class="rounded-xl border border-white/6 bg-gradient-to-br from-amber-950/30 to-ink-900 p-4 space-y-2.5">
+              <p class="text-[10px] uppercase tracking-widest text-ember-400 font-mono font-semibold">Reward Estimate</p>
+              <div class="flex justify-between text-xs text-slate-400"><span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3 h-3 text-slate-500"></i>Base Participation</span><span class="font-mono text-slate-300">50 pts</span></div>
+              <div class="flex justify-between text-xs text-slate-400"><span class="flex items-center gap-1.5"><i data-lucide="trending-up" class="w-3 h-3 text-slate-500"></i>Max Performance Bonus</span><span class="font-mono text-slate-300">50 pts</span></div>
+              <div class="flex justify-between text-ember-400 font-semibold pt-2 border-t border-white/6"><span class="flex items-center gap-1.5 text-sm"><i data-lucide="star" class="w-3.5 h-3.5"></i>Total Possible</span><span class="font-mono text-base">100 pts</span></div>
+            </div>
+          </div>
+          <button type="button" @click="generateQuiz()" :disabled="isGenerating" class="btn-primary mt-6 w-full py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+            <template x-if="!isGenerating"><span class="flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i>Generate AI Diagnostic Quiz</span></template>
+            <template x-if="isGenerating"><span class="flex items-center gap-2"><svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Ingesting &amp; generating MCQs…</span></template>
+          </button>
+        </section>
+      </div>
+
+      <!-- ── CONTENT SELECTION PANEL (shown after custom upload) ── -->
+      <div x-show="showContentSelection" class="space-y-6 animate-slide-up">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <button @click="showContentSelection = false; uploadedMaterialId = null;" class="btn-ghost text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 mb-3">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>Back to Upload
+            </button>
+            <h2 class="text-xl font-bold text-white">Choose Your Assessment</h2>
+            <p class="text-sm text-slate-400 mt-1">Document processed successfully. Select a quiz or MCQ set to begin.</p>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/8 text-xs text-emerald-400">
+            <i data-lucide="file-check" class="w-4 h-4 flex-shrink-0"></i>
+            <span class="font-medium">Document ingested &amp; ready</span>
+          </div>
+        </div>
+
+        <!-- Mixed-Format Quizzes -->
+        <div class="card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-ember-500/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="layers" class="w-4 h-4 text-ember-400"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-white">Mixed-Format Quizzes</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">Fill-in-blanks · True/False · MCQ · Match-the-following · Short Answer · Essay &nbsp;·&nbsp; Timed overall</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <template x-for="item in availableItems.filter(i => i.type === 'mixed')" :key="item.id">
+              <div class="content-item-card" 
+                :class="[
+                  selectedContentItem?.id === item.id ? 'item-selected' : '',
+                  completedQuizItems.includes(item.id) ? 'item-completed' : ''
+                ]" 
+                @click="selectAndStartItem(item)">
+                <div class="flex items-center justify-between">
+                  <div class="content-check" :class="completedQuizItems.includes(item.id) ? 'bg-emerald-500 border-emerald-500' : ''">
+                    <template x-if="selectedContentItem?.id === item.id || completedQuizItems.includes(item.id)">
+                      <i data-lucide="check" class="w-3 h-3 text-ink-950"></i>
+                    </template>
+                  </div>
+                  <span class="qtype-badge border border-ember-500/30 bg-ember-500/10 text-ember-400">Mixed</span>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-white" x-text="item.label"></p>
+                  <p class="text-[11px] text-slate-400 mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-mono">
+                  <i data-lucide="clock" class="w-3 h-3"></i>
+                  <span x-text="item.durationLabel"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- MCQ Sets -->
+        <div class="card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-sky-500/15 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="list-checks" class="w-4 h-4 text-sky-400"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-white">MCQ Sets</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">Multiple choice questions only &nbsp;·&nbsp; 90 seconds per question &nbsp;·&nbsp; Timed overall</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <template x-for="item in availableItems.filter(i => i.type === 'mcq')" :key="item.id">
+              <div class="content-item-card" 
+                :class="[
+                  selectedContentItem?.id === item.id ? 'item-selected' : '',
+                  completedQuizItems.includes(item.id) ? 'item-completed' : ''
+                ]" 
+                @click="selectAndStartItem(item)">
+                <div class="flex items-center justify-between">
+                  <div class="content-check" :class="completedQuizItems.includes(item.id) ? 'bg-emerald-500 border-emerald-500' : ''">
+                    <template x-if="selectedContentItem?.id === item.id || completedQuizItems.includes(item.id)">
+                      <i data-lucide="check" class="w-3 h-3 text-ink-950"></i>
+                    </template>
+                  </div>
+                  <span class="qtype-badge border border-sky-500/30 bg-sky-500/10 text-sky-400">MCQ Only</span>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-white" x-text="item.label"></p>
+                  <p class="text-[11px] text-slate-400 mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-mono">
+                  <i data-lucide="clock" class="w-3 h-3"></i>
+                  <span x-text="item.durationLabel"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Generating spinner -->
+        <div x-show="isGenerating" class="card rounded-2xl p-10 text-center animate-fade-in">
+          <svg class="animate-spin w-9 h-9 text-ember-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <p class="text-sm font-semibold text-slate-200">Generating your quiz…</p>
+          <p class="text-xs text-slate-500 mt-1">AI is preparing questions from the document</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. QUIZ ── -->
+    <div x-show="activeTab === 'quiz'" class="animate-slide-up">
+      <div x-show="!currentQuiz" class="card rounded-2xl p-16 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-ember-500/10 border border-ember-500/20 flex items-center justify-center mx-auto mb-5">
+          <i data-lucide="clipboard-list" class="w-8 h-8 text-ember-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-white">No assessment active</h3>
+        <p class="text-sm text-slate-400 mt-2 mb-6">Load a manual and generate a diagnostic quiz first.</p>
+        <button @click="activeTab = 'upload'" class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>Go to Ingest Material
+        </button>
+      </div>
+
+      <div x-show="currentQuiz" class="max-w-2xl mx-auto space-y-5">
+        <!-- Timer + mode row -->
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex items-center gap-2">
+            <span class="qtype-badge border" :class="currentQuizMode === 'mixed' ? 'border-ember-500/30 bg-ember-500/10 text-ember-400' : 'border-sky-500/30 bg-sky-500/10 text-sky-400'" x-text="currentQuizMode === 'mixed' ? '⚡ Mixed Format' : '✦ MCQ Only'"></span>
+            <template x-if="tabSwitchCount > 0">
+              <span class="qtype-badge border border-red-500/30 bg-red-500/10 text-red-400">
+                <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                <span x-text="`${tabSwitchCount} tab switch${tabSwitchCount > 1 ? 'es' : ''} detected`"></span>
+              </span>
+            </template>
+          </div>
+          <div class="quiz-timer" :class="quizTimerClass" x-show="quizTimerRunning">
+            <i data-lucide="timer" class="w-4 h-4 flex-shrink-0"></i>
+            <span x-text="quizTimerDisplay"></span>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="flex items-center justify-between text-xs mb-1">
+          <span class="text-slate-400 font-mono">Question <span class="text-white font-semibold" x-text="currentQIndex + 1"></span> of <span x-text="currentQuiz?.questions?.length || 0"></span></span>
+          <span class="gap-badge border border-sky-500/30 bg-sky-500/10 text-sky-300" x-text="currentQuestion?.competency_mapped || currentQuiz?.difficulty"></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill bg-gradient-to-r from-ember-500 to-ember-400" :style="`width: ${currentQuiz ? Math.round(((currentQIndex + 1) / currentQuiz.questions.length) * 100) : 0}%`"></div>
+        </div>
+
+        <template x-if="currentQuestion">
+          <div class="space-y-4">
+            <!-- Question type badge -->
+            <div class="flex items-center gap-2">
+              <span class="qtype-badge border text-[10px]"
+                :class="{
+                  'border-purple-500/30 bg-purple-500/10 text-purple-300': currentQType === 'fill_blank',
+                  'border-teal-500/30 bg-teal-500/10 text-teal-300': currentQType === 'true_false',
+                  'border-sky-500/30 bg-sky-500/10 text-sky-300': currentQType === 'mcq',
+                  'border-orange-500/30 bg-orange-500/10 text-orange-300': currentQType === 'match',
+                  'border-indigo-500/30 bg-indigo-500/10 text-indigo-300': currentQType === 'short_answer',
+                  'border-rose-500/30 bg-rose-500/10 text-rose-300': currentQType === 'essay'
+                }"
+                x-text="{
+                  mcq: '⊙ Multiple Choice',
+                  true_false: '⊕ True / False',
+                  fill_blank: '✎ Fill in the Blank',
+                  match: '⇄ Match the Following',
+                  short_answer: '✦ Short Answer',
+                  essay: '✏ Essay'
+                }[currentQType] || 'MCQ'">
+              </span>
+            </div>
+
+            <!-- Scenario box with AI Voice Assistant -->
+            <div class="scenario-box rounded-2xl border border-sky-900/40 bg-gradient-to-br from-[#0a1828] to-[#06101e] p-5">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-[10px] uppercase tracking-widest text-sky-400 font-mono font-semibold flex items-center gap-1.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                  <span x-text="i18n.scenario">Workplace Field Scrutiny Scenario</span>
+                </p>
+                <!-- 🔊 AI Voice Scrutiny Assistant -->
+                <button type="button" @click="toggleScenarioVoice()" class="px-2.5 py-1 rounded-lg text-xs font-medium border border-sky-500/30 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 flex items-center gap-1.5 transition-all shadow-sm">
+                  <template x-if="!isSpeakingVoice">
+                    <span class="flex items-center gap-1"><i data-lucide="volume-2" class="w-3.5 h-3.5 text-sky-400"></i><span x-text="i18n.readScenario">Read Scenario</span></span>
+                  </template>
+                  <template x-if="isSpeakingVoice">
+                    <span class="flex items-center gap-1 text-amber-400"><i data-lucide="volume-x" class="w-3.5 h-3.5 animate-pulse"></i><span x-text="i18n.stopVoice">Stop Voice</span></span>
+                  </template>
+                </button>
+              </div>
+              <p class="text-sm text-slate-200 leading-relaxed" x-text="currentQuestion.scenario_text"></p>
+            </div>
+
+            <!-- Question text -->
+            <p class="question-text text-white font-semibold text-base leading-snug" x-show="currentQuestion.question_text" x-text="currentQType === 'fill_blank' ? currentQuestion.question_text.replace(/\b(\w+)\b(?=\s*\?)/, '________') : currentQuestion.question_text"></p>
+
+            <!-- ─── MCQ Options ─── -->
+            <div x-show="currentQType === 'mcq'" class="space-y-2.5">
+              <template x-for="(optText, optKey) in currentQuestion.options" :key="optKey">
+                <button type="button" @click="selectOption(currentQuestion.question_id, optKey)"
+                  class="option-btn"
+                  :class="userAnswers[currentQuestion.question_id]?.selected === optKey ? 'selected' : ''">
+                  <span class="option-key" x-text="optKey"></span>
+                  <span x-text="optText"></span>
+                </button>
+              </template>
+            </div>
+
+            <!-- ─── True / False ─── -->
+            <div x-show="currentQType === 'true_false'" class="flex gap-3">
+              <button type="button" @click="setTfAnswer(currentQuestion.question_id, 'True')"
+                class="tf-btn tf-true"
+                :class="isTfSelected(currentQuestion, 'True') ? 'tf-selected' : ''">
+                <div class="text-2xl mb-1">✓</div>
+                <div class="font-semibold">True</div>
+              </button>
+              <button type="button" @click="setTfAnswer(currentQuestion.question_id, 'False')"
+                class="tf-btn tf-false"
+                :class="isTfSelected(currentQuestion, 'False') ? 'tf-selected' : ''">
+                <div class="text-2xl mb-1">✗</div>
+                <div class="font-semibold">False</div>
+              </button>
+            </div>
+
+            <!-- ─── Fill in the Blank ─── -->
+            <div x-show="currentQType === 'fill_blank'">
+              <input type="text" class="answer-input"
+                placeholder="Type the missing word or phrase…"
+                :value="userAnswers[currentQuestion.question_id]?.text || ''"
+                @input="setTextAnswer(currentQuestion.question_id, $event.target.value)">
+              <p class="text-[11px] text-slate-500 mt-2">Complete the sentence above with the correct term.</p>
+            </div>
+
+            <!-- ─── Match the Following ─── -->
+            <div x-show="currentQType === 'match'" class="space-y-2.5">
+              <p class="text-[11px] text-slate-400 mb-3">Match each item in Column A to its correct counterpart in Column B.</p>
+              <template x-for="pair in getMatchPairs(currentQuestion)" :key="pair.key">
+                <div class="match-pair">
+                  <div class="match-item">
+                    <span class="text-[10px] text-slate-500 font-mono block mb-0.5" x-text="`${pair.key}.`"></span>
+                    <span x-text="pair.leftText"></span>
+                  </div>
+                  <div class="text-slate-500 text-center text-lg">→</div>
+                  <select class="match-select" @change="setMatchAnswer(currentQuestion.question_id, pair.key, $event.target.value)">
+                    <option value="">Select…</option>
+                    <template x-for="opt in pair.rightOptions" :key="opt.key">
+                      <option :value="opt.key" x-text="opt.text"></option>
+                    </template>
+                  </select>
+                </div>
+              </template>
+            </div>
+
+            <!-- ─── Short Answer ─── -->
+            <div x-show="currentQType === 'short_answer'">
+              <textarea class="answer-textarea" rows="3"
+                placeholder="Write a brief answer (2–4 sentences)…"
+                :value="userAnswers[currentQuestion.question_id]?.text || ''"
+                @input="setTextAnswer(currentQuestion.question_id, $event.target.value)"></textarea>
+              <p class="text-[11px] text-slate-500 mt-2">Provide a concise, focused response in your own words.</p>
+            </div>
+
+            <!-- ─── Essay ─── -->
+            <div x-show="currentQType === 'essay'" class="space-y-3">
+              <textarea class="answer-textarea" rows="6"
+                placeholder="Write a detailed essay response…"
+                :value="userAnswers[currentQuestion.question_id]?.text || ''"
+                @input="setTextAnswer(currentQuestion.question_id, $event.target.value)"></textarea>
+              <p class="text-[11px] text-slate-400">Write a comprehensive response. You may also upload a handwritten or typed PDF/PNG answer.</p>
+              <!-- Essay file upload -->
+              <div class="essay-upload-zone" :class="userAnswers[currentQuestion.question_id]?.fileName ? 'has-file' : ''"
+                @click="$refs['essayFile_' + currentQIndex].click()">
+                <input type="file" :x-ref="'essayFile_' + currentQIndex" class="hidden" accept=".pdf,.png,.jpg,.jpeg"
+                  @change="handleEssayFileUpload(currentQuestion.question_id, $event)">
+                <template x-if="!userAnswers[currentQuestion.question_id]?.fileName">
+                  <div>
+                    <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-slate-400 font-medium">Upload handwritten answer</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">PDF, PNG, or JPG — up to 10 MB</p>
+                  </div>
+                </template>
+                <template x-if="userAnswers[currentQuestion.question_id]?.fileName">
+                  <div class="flex items-center justify-center gap-3 text-emerald-400">
+                    <i data-lucide="file-check" class="w-5 h-5 flex-shrink-0"></i>
+                    <div class="text-left">
+                      <p class="text-sm font-semibold" x-text="userAnswers[currentQuestion.question_id].fileName"></p>
+                      <p class="text-[11px] text-emerald-500">File uploaded — click to replace</p>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- ─── Confidence Level ─── -->
+            <div>
+              <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-2.5 font-mono flex items-center gap-2">
+                Confidence Level
+                <template x-if="!hasAnswer">
+                  <span class="text-amber-500 normal-case font-sans text-[10px]">— select an answer first</span>
+                </template>
+              </p>
+              <div class="grid grid-cols-3 gap-2.5">
+                <button type="button"
+                  @click="hasAnswer && setConfidence(currentQuestion.question_id, 'High')"
+                  class="conf-btn"
+                  :class="[
+                    userAnswers[currentQuestion.question_id]?.confidence === 'High'
+                      ? 'border-emerald-500 bg-emerald-500/10 conf-sel-high'
+                      : 'hover:border-emerald-500/30',
+                    !hasAnswer ? 'conf-disabled' : ''
+                  ]">
+                  <div class="text-lg mb-0.5">✓</div>
+                  <div class="text-xs font-semibold text-slate-100">Sure</div>
+                  <div class="text-[10px] text-slate-500">I know this</div>
+                </button>
+                <button type="button"
+                  @click="hasAnswer && setConfidence(currentQuestion.question_id, 'Medium')"
+                  class="conf-btn"
+                  :class="[
+                    userAnswers[currentQuestion.question_id]?.confidence === 'Medium'
+                      ? 'border-ember-500 bg-ember-500/10 conf-sel-medium'
+                      : 'hover:border-ember-500/30',
+                    !hasAnswer ? 'conf-disabled' : ''
+                  ]">
+                  <div class="text-lg mb-0.5">?</div>
+                  <div class="text-xs font-semibold text-slate-100">Unsure</div>
+                  <div class="text-[10px] text-slate-500">Educated guess</div>
+                </button>
+                <button type="button"
+                  @click="hasAnswer && setConfidence(currentQuestion.question_id, 'Low')"
+                  class="conf-btn"
+                  :class="[
+                    userAnswers[currentQuestion.question_id]?.confidence === 'Low'
+                      ? 'border-red-500 bg-red-500/10 conf-sel-low'
+                      : 'hover:border-red-500/30',
+                    !hasAnswer ? 'conf-disabled' : ''
+                  ]">
+                  <div class="text-lg mb-0.5">✗</div>
+                  <div class="text-xs font-semibold text-slate-100">Guessing</div>
+                  <div class="text-[10px] text-slate-500">Not confident</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- ─── Actions ─── -->
+            <div class="space-y-2.5">
+              <button type="button"
+                x-show="currentQIndex < (currentQuiz.questions.length - 1)"
+                @click="nextQuestion()"
+                :disabled="!hasAnswer"
+                class="btn-primary w-full py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                <span>Confirm Answer</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <button type="button"
+                x-show="currentQIndex === (currentQuiz.questions.length - 1)"
+                @click="submitQuiz()"
+                :disabled="isSubmitting || !hasAnswer"
+                class="btn-primary w-full py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                <template x-if="!isSubmitting"><span class="flex items-center gap-2"><i data-lucide="send" class="w-4 h-4"></i>Submit Assessment</span></template>
+                <template x-if="isSubmitting"><span class="flex items-center gap-2"><svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Evaluating gaps…</span></template>
+              </button>
+              <button type="button" @click="prevQuestion()" :disabled="currentQIndex === 0"
+                class="w-full text-xs text-slate-500 disabled:opacity-30 hover:text-slate-300 transition-colors py-1">
+                ← Previous question
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ── 3. RESULTS ── -->
+    <div x-show="activeTab === 'results'" class="space-y-6 animate-slide-up">
+      <div x-show="!lastResult" class="card rounded-2xl p-16 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
+          <i data-lucide="bar-chart-2" class="w-8 h-8 text-emerald-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-white">No assessment completed yet</h3>
+        <p class="text-sm text-slate-400 mt-2 mb-6">Finish a scenario assessment to open the diagnostic report.</p>
+        <button @click="activeTab = 'upload'" class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm">
+          <i data-lucide="play" class="w-4 h-4"></i>Start Assessment
+        </button>
+      </div>
+
+      <div x-show="lastResult" class="space-y-6">
+        <!-- KPI row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="card card-glow-amber rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+            <div class="absolute top-0 right-0 w-24 h-24 rounded-full bg-amber-500/10 blur-2xl"></div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] uppercase tracking-widest text-slate-500 font-mono flex items-center gap-1.5"><i data-lucide="flame" class="w-3.5 h-3.5 text-ember-500"></i>Active Learning Streak</span>
+                <span class="gap-badge border border-ember-500/30 bg-ember-500/10 text-ember-400 font-mono text-[10px]">Daily Streak</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-1">
+                <p class="text-4xl font-bold font-mono text-white" x-text="`${lastResult?.learning_streak_days || headerStreak || 1}`"></p>
+                <span class="text-xs font-semibold text-ember-400">Day Streak</span>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3 pt-2.5 border-t border-white/6 flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>
+              <span>Streak logged for today (+1/day active)</span>
+            </p>
+          </div>
+
+          <div class="card card-glow-sky rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+            <div class="absolute top-0 right-0 w-24 h-24 rounded-full bg-sky-500/10 blur-2xl"></div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] uppercase tracking-widest text-slate-500 font-mono flex items-center gap-1.5"><i data-lucide="star" class="w-3.5 h-3.5 text-ember-400"></i>Total Cumulative Karma</span>
+                <span class="gap-badge border border-sky-500/30 bg-sky-500/10 text-sky-300 font-mono text-[10px]">Cumulative</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-1">
+                <p class="text-4xl font-bold font-mono text-white" x-text="`${lastResult?.total_karma_points || headerKarma}`"></p>
+                <span class="text-xs font-semibold text-ember-400">pts total</span>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3 pt-2.5 border-t border-white/6 flex justify-between items-center">
+              <span>Earned on this test:</span>
+              <strong class="font-mono text-emerald-400" x-text="`+${lastResult?.points_earned || 50} pts`"></strong>
+            </p>
+          </div>
+
+          <div class="card card-glow-emerald rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+            <div class="absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-20" :class="(lastResult?.percentage || 0) >= 60 ? 'bg-emerald-400' : 'bg-red-400'"></div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">Assessment Score</p>
+                <span class="gap-badge font-mono text-[10px]"
+                  :class="(lastResult?.percentage || 0) >= 60 ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border border-red-500/30 bg-red-500/10 text-red-300'"
+                  x-text="`${lastResult?.score || 0}/${lastResult?.total_questions || 0} Correct`"></span>
+              </div>
+              <p class="text-4xl font-bold font-mono" :class="(lastResult?.percentage || 0) >= 60 ? 'text-emerald-400' : 'text-red-400'" x-text="`${lastResult?.percentage || 0}%`"></p>
+            </div>
+            <p class="text-xs mt-3 pt-2.5 border-t border-white/6 font-semibold"
+              :class="(lastResult?.percentage || 0) >= 60 ? 'text-emerald-300' : 'text-red-300'"
+              x-text="(lastResult?.percentage || 0) >= 70 ? 'Proficient Mastery' : ((lastResult?.percentage || 0) >= 50 ? 'Attention Range' : 'Foundational Support Required')"></p>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="card rounded-2xl p-5">
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-3">Accuracy Breakdown</p>
+            <div class="relative h-36"><canvas id="competencyBarChart"></canvas></div>
+            <div class="flex gap-4 justify-center text-[10px] text-slate-400 mt-3">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>Correct</span>
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>Incorrect</span>
+            </div>
+          </div>
+          <div class="card rounded-2xl p-5">
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-1">Confidence vs. Accuracy</p>
+            <p class="text-[10px] text-slate-600 mb-4">Does your confidence match your accuracy?</p>
+            <template x-for="band in confidenceBands" :key="band.label">
+              <div class="mb-3.5">
+                <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
+                  <span x-text="`${band.label} (${band.count}q)`"></span>
+                  <span class="font-mono" x-text="`${band.pct}%`"></span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" :class="band.bar" :style="`width: ${band.pct}%`"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Competency chart -->
+        <div class="card rounded-2xl p-5">
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-4">Competency Scores Breakdown</p>
+          <div class="relative h-52"><canvas id="scoreTrendChart"></canvas></div>
+        </div>
+
+        <!-- FRAC Multi-Dimensional Radar (Spider) Chart -->
+        <div class="card rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-[10px] uppercase tracking-widest text-sky-400 font-mono font-semibold flex items-center gap-1.5">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>FRAC Multi-Dimensional Competency Polygon
+              </p>
+              <p class="text-xs text-slate-400 mt-0.5">5 Core MoSPI Statistical Pillars: Current Assessment vs 75% Benchmark</p>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-300">MoSPI Standards</span>
+          </div>
+          <div class="relative h-64"><canvas id="fracRadarChart"></canvas></div>
+        </div>
+
+        <!-- Competency matrix -->
+        <div class="card rounded-2xl p-5">
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-5">Competency Matrix</p>
+          <div class="space-y-4">
+            <template x-for="c in lastResult?.competency_breakdown" :key="c.competency_id">
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="text-slate-200" x-text="c.competency_name"></span>
+                  <span class="font-mono font-semibold" :class="c.percentage >= 70 ? 'text-emerald-400' : (c.percentage >= 50 ? 'text-ember-400' : 'text-red-400')" x-text="`${c.percentage}%`"></span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" :class="c.percentage >= 70 ? 'bg-emerald-500' : (c.percentage >= 50 ? 'bg-ember-500' : 'bg-red-500')" :style="`width: ${c.percentage}%`"></div>
+                </div>
+                <p x-show="c.percentage < 70" class="text-[10px] text-red-400 mt-1 flex items-center gap-1">
+                  <i data-lucide="alert-triangle" class="w-3 h-3"></i>Gap identified
+                </p>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Identified gaps -->
+        <div class="card rounded-2xl p-5">
+          <p class="text-[10px] uppercase tracking-widest text-ember-400 font-mono mb-4 flex items-center gap-2">
+            <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i>Identified Skill Gaps
+          </p>
+          <div x-show="!lastResult?.diagnosed_gaps?.length" class="text-sm text-slate-400 flex items-center gap-2 py-4">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+            No critical competency gaps detected.
+          </div>
+          <div class="space-y-3">
+            <template x-for="gap in lastResult?.diagnosed_gaps" :key="gap.competency_id">
+              <div class="gap-card-item rounded-xl border border-red-900/40 bg-gradient-to-br from-red-950/30 to-ink-900 p-4">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+                  <span class="text-sm font-semibold text-white" x-text="gap.competency_name"></span>
+                  <span class="gap-badge border border-red-500/30 bg-red-500/10 text-red-300 font-mono" x-text="gap.severity"></span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed" x-text="gap.diagnostic_summary"></p>
+                <p class="text-[10px] text-red-400 mt-2 font-mono">FRAC gap · Prescribe learning path</p>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Targeted iGOT Karmayogi Courses & 1-Click Enrolment -->
+        <div class="card rounded-2xl p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <p class="text-[10px] uppercase tracking-widest text-emerald-400 font-mono font-semibold flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>Targeted iGOT Karmayogi Prescriptions
+              </p>
+              <p class="text-xs text-slate-400 mt-0.5">Accredited by National Statistical Systems Training Academy (NSSTA) &amp; MoSPI</p>
+            </div>
+            <span class="text-[10px] text-emerald-400 font-mono border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 rounded-lg">Direct LMS Bridge Ready</span>
+          </div>
+
+          <div x-show="!lastResult?.recommendations?.length" class="text-sm text-slate-400 flex items-center gap-2 py-4">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+            All competencies above benchmark. No remedial courses required.
+          </div>
+
+          <div class="space-y-3" x-show="lastResult?.recommendations?.length">
+            <template x-for="rec in lastResult?.recommendations" :key="rec.course_id">
+              <div class="rec-card p-4 rounded-xl border border-white/8 bg-ink-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all hover:border-amber-500/30">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1 flex-wrap">
+                    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" x-text="rec.course_id"></span>
+                    <span class="text-[11px] text-slate-400 font-mono" x-text="`${rec.duration_minutes} min · ${rec.provider}`"></span>
+                    <span class="gap-badge text-[10px] border border-sky-500/30 bg-sky-500/10 text-sky-300" x-text="`Target: ${rec.target_gap_addressed}`"></span>
+                  </div>
+                  <h4 class="text-sm font-semibold text-white mb-1" x-text="rec.course_title"></h4>
+                  <p class="text-xs text-slate-400 leading-relaxed" x-text="rec.justification"></p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                  <button type="button" @click="enrolInCourse(rec)" class="btn-primary text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 font-bold shadow-lg shadow-amber-500/20">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span x-text="i18n.enrolIgot">1-Click iGOT Enrol</span>
+                  </button>
+                  <a :href="rec.course_url || 'https://igotkarmayogi.gov.in'" target="_blank" class="btn-ghost text-xs px-3 py-2 rounded-lg flex items-center gap-1 text-slate-300 hover:text-white">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    <span>Portal</span>
+                  </a>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="card rounded-2xl p-5 space-y-3">
+          <p class="text-xs uppercase tracking-wider text-slate-400 font-mono mb-2">Official Ministry Actions (Step 3)</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <button @click="showAnswerKey = !showAnswerKey" class="btn-ghost py-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2">
+              <i data-lucide="key" class="w-4 h-4 text-ember-400"></i>
+              <span x-text="showAnswerKey ? 'Hide Answer Key' : 'Review Answer Key'"></span>
+            </button>
+            <button @click="openAparDossierModal()" class="btn-primary py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border-0">
+              <i data-lucide="file-check-2" class="w-4 h-4"></i>
+              <span x-text="i18n.exportDossier">Export APAR Dossier</span>
+            </button>
+            <button @click="activeTab = 'dashboard'; loadDashboard(); $nextTick(() => lucide.createIcons())" class="btn-primary py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+              <i data-lucide="layout-dashboard" class="w-4 h-4"></i>Continue to Dashboard
+            </button>
+            <button @click="goTab('sme')" class="btn-ghost py-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 hover:border-sky-500/50">
+              <i data-lucide="check-square" class="w-4 h-4 text-sky-400"></i>SME Review
+            </button>
+          </div>
+          <div class="pt-2 border-t border-white/6 flex justify-between items-center text-xs text-slate-400">
+            <span>Assessment verified &amp; streak updated for today.</span>
+            <button @click="activeTab = 'upload'; currentQuiz = null; userAnswers = {}; showContentSelection = false;" class="text-ember-400 hover:text-ember-300 font-medium inline-flex items-center gap-1">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>Upload another document →
+            </button>
+          </div>
+        </div>
+
+        <!-- Answer key -->
+        <div x-show="showAnswerKey" class="card rounded-2xl p-5 space-y-4 animate-fade-in">
+          <div class="flex items-center justify-between pb-3 border-b border-white/8">
+            <h4 class="text-sm font-semibold text-white flex items-center gap-2">
+              <i data-lucide="key" class="w-4 h-4 text-ember-400"></i>
+              Answer Key &amp; Detailed Conceptual Rationale
+            </h4>
+            <span class="text-xs text-slate-400 font-mono" x-text="`${lastResult?.question_reviews?.length || 0} Questions Evaluated`"></span>
+          </div>
+          <template x-for="(rev, rIdx) in lastResult?.question_reviews" :key="rIdx">
+            <div class="p-4 rounded-xl border" :class="rev.is_correct ? 'border-emerald-900/50 bg-emerald-950/20' : 'border-red-900/50 bg-red-950/10'">
+              <div class="flex flex-wrap justify-between gap-2 text-xs mb-2">
+                <span class="text-slate-300 font-medium font-mono" x-text="`Question ${rIdx + 1} · Competency: ${rev.competency_mapped}`"></span>
+                <span class="gap-badge font-semibold" :class="rev.is_correct ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border border-red-500/30 bg-red-500/10 text-red-300'" x-text="rev.is_correct ? '✓ Correct Answer' : '✗ Incorrect Answer'"></span>
+              </div>
+              <p class="text-sm text-white font-medium mb-3 leading-relaxed" x-text="rev.scenario_text"></p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3 text-xs">
+                <div class="p-2.5 rounded-lg border" :class="rev.is_correct ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-red-500/30 bg-red-500/10 text-red-300'">
+                  <span class="font-mono text-[10px] block opacity-75">YOUR SELECTION:</span>
+                  <strong class="font-semibold" x-text="`Option ${rev.selected_option}: ${rev.options?.[rev.selected_option] || rev.selected_option}`"></strong>
+                </div>
+                <div class="p-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                  <span class="font-mono text-[10px] block opacity-75">CORRECT OPTION:</span>
+                  <strong class="font-semibold" x-text="`Option ${rev.correct_option}: ${rev.options?.[rev.correct_option] || rev.correct_option}`"></strong>
+                </div>
+              </div>
+              <div class="reasoning-box p-3 rounded-lg bg-ink-950/50 border border-white/5 space-y-2 text-xs">
+                <div>
+                  <strong class="text-ember-400 flex items-center gap-1.5 font-medium mb-1">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>Official Concept Rationale &amp; Reasoning:
+                  </strong>
+                  <p class="text-slate-300 leading-relaxed" x-text="rev.explanation"></p>
+                </div>
+                <div x-show="!rev.is_correct && rev.distractor_feedback" class="pt-2 border-t border-white/5">
+                  <strong class="text-red-400 flex items-center gap-1.5 font-medium mb-1">
+                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>Why your selected choice is incorrect:
+                  </strong>
+                  <p class="text-slate-400 leading-relaxed" x-text="rev.distractor_feedback"></p>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. DASHBOARD ── -->
+    <div x-show="activeTab === 'dashboard'" class="space-y-6 animate-slide-up">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card card-glow-amber rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-ember-500/10 blur-2xl"></div>
+          <div class="w-8 h-8 rounded-lg bg-ember-500/15 flex items-center justify-center mb-3"><i data-lucide="star" class="w-4 h-4 text-ember-400"></i></div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">iGOT Points</p>
+          <p class="text-3xl font-bold text-ember-400 mt-1 font-mono" x-text="dashboardData?.karma_points_earned || 0"></p>
+          <p class="text-[10px] text-slate-500 mt-1">+<span x-text="lastResult?.points_earned || 0"></span> last attempt</p>
+        </div>
+        <div class="card card-glow-emerald rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-emerald-500/10 blur-2xl"></div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center mb-3"><i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-400"></i></div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">Assessments</p>
+          <p class="text-3xl font-bold text-emerald-400 mt-1 font-mono" x-text="dashboardData?.total_quizzes_taken || 0"></p>
+          <p class="text-[10px] text-slate-500 mt-1">FRAC diagnostics</p>
+        </div>
+        <div class="card card-glow-sky rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-sky-500/10 blur-2xl"></div>
+          <div class="w-8 h-8 rounded-lg bg-sky-500/15 flex items-center justify-center mb-3"><i data-lucide="trending-up" class="w-4 h-4 text-sky-400"></i></div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">Avg Proficiency</p>
+          <p class="text-3xl font-bold text-sky-400 mt-1 font-mono" x-text="`${dashboardData?.average_score || 0}%`"></p>
+          <p class="text-[10px] text-slate-500 mt-1">Attention range</p>
+        </div>
+        <div class="card card-glow-red rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-red-500/10 blur-2xl"></div>
+          <div class="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center mb-3"><i data-lucide="alert-circle" class="w-4 h-4 text-red-400"></i></div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">Gap Modules</p>
+          <p class="text-3xl font-bold text-red-400 mt-1 font-mono" x-text="dashboardData?.active_competency_gaps?.length || 0"></p>
+          <p class="text-[10px] text-slate-500 mt-1">Active recs</p>
+        </div>
+      </div>
+
+      <!-- Learning Path -->
+      <div class="card rounded-2xl p-5">
+        <div class="flex justify-between items-center mb-5">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-ember-500/15 flex items-center justify-center"><i data-lucide="route" class="w-3.5 h-3.5 text-ember-400"></i></div>
+            <h3 class="text-sm font-semibold text-white">Prescribed iGOT Learning Path</h3>
+          </div>
+          <span class="text-[10px] text-slate-500 font-mono border border-white/6 px-2 py-1 rounded-lg">FRAC-aligned · MoSPI</span>
+        </div>
+        <div class="space-y-2.5" x-show="(lastResult?.recommendations || dashboardData?.recommended_courses || []).length">
+          <template x-for="rec in (lastResult?.recommendations || dashboardData?.recommended_courses || [])" :key="rec.course_id">
+            <div class="rec-card p-4 rounded-xl border border-white/8 bg-ink-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <span class="text-[10px] text-amber-400 font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20" x-text="rec.course_id"></span>
+                  <span class="gap-badge border border-white/8 bg-white/4 text-slate-400"><i data-lucide="clock" class="w-2.5 h-2.5"></i><span x-text="`${rec.duration_minutes} min`"></span></span>
+                  <span class="gap-badge border border-white/8 bg-white/4 text-slate-400" x-text="rec.provider"></span>
+                </div>
+                <p class="text-sm font-semibold text-white" x-text="rec.course_title"></p>
+                <p class="text-xs text-slate-400 mt-1 leading-relaxed" x-text="rec.justification"></p>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                <button type="button" @click="enrolInCourse(rec)" class="btn-primary text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 font-bold shadow-md shadow-amber-500/10">
+                  <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                  <span>1-Click Enrol</span>
+                </button>
+                <a :href="rec.course_url || 'https://igotkarmayogi.gov.in'" target="_blank" class="btn-ghost text-xs px-3 py-2 rounded-lg flex items-center gap-1 text-slate-300 hover:text-white">
+                  <i data-lucide="external-link" class="w-3 h-3"></i>Portal
+                </a>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div x-show="!(lastResult?.recommendations || dashboardData?.recommended_courses || []).length" class="text-sm text-slate-500 flex items-center gap-2 py-6">
+          <i data-lucide="info" class="w-4 h-4 text-slate-600"></i>
+          Complete an assessment to receive a prescribed iGOT learning path.
+        </div>
+        <!-- Quick Action Bar -->
+        <div class="mt-4 pt-3 border-t border-white/6 flex justify-between items-center flex-wrap gap-2">
+          <span class="text-xs text-slate-400">MoSPI Annual Performance Appraisal Report sync available.</span>
+          <button @click="openAparDossierModal()" class="btn-ghost px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 text-emerald-400 hover:border-emerald-500/40">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>Export Official APAR Dossier (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- FRAC Mastery Matrix -->
+      <div class="card rounded-2xl p-5">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-7 h-7 rounded-lg bg-sky-500/15 flex items-center justify-center"><i data-lucide="grid-2x2" class="w-3.5 h-3.5 text-sky-400"></i></div>
+          <h3 class="text-sm font-semibold text-white">FRAC Mastery Matrix</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <template x-for="item in dashboardData?.competency_mastery_radar" :key="item.competency_id">
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-300" x-text="item.competency_name"></span>
+                <span class="font-mono font-semibold" :class="item.score >= 75 ? 'text-emerald-400' : (item.score >= 60 ? 'text-sky-400' : 'text-ember-400')" x-text="`${item.score}%`"></span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" :class="item.score >= 75 ? 'bg-emerald-500' : (item.score >= 60 ? 'bg-sky-500' : 'bg-ember-500')" :style="`width: ${item.score}%`"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. SME REVIEW ── -->
+    <div x-show="activeTab === 'sme'" class="space-y-5 animate-slide-up">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-5 h-5 text-ember-400"></i>SME Review
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Human-in-the-loop audit for questions asked in the assessment only.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="gap-badge border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-mono text-xs" x-show="activeSmeQuizId">
+            <i data-lucide="filter" class="w-3 h-3"></i>Test: <span x-text="activeSmeQuizId"></span>
+          </span>
+          <button @click="loadSmeQuestions()" class="btn-ghost text-xs px-3 py-2 rounded-lg flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>Refresh test items
+          </button>
+        </div>
+      </div>
+      <div class="p-3 rounded-xl border border-white/6 bg-ink-800/60 flex items-center justify-between text-xs">
+        <span class="text-slate-300 flex items-center gap-2">
+          <i data-lucide="file-check" class="w-4 h-4 text-ember-400"></i>
+          <span>Displaying questions asked in test: <strong class="text-white font-mono" x-text="activeSmeQuizId || 'Current Test'"></strong></span>
+        </span>
+        <span class="text-slate-400 font-mono" x-text="`${smeQuestions.length} Questions Asked`"></span>
+      </div>
+      <template x-for="q in smeQuestions" :key="q.id">
+        <div class="card rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-mono text-[10px] text-slate-500 border border-white/8 px-2 py-0.5 rounded" x-text="q.question_id"></span>
+              <span class="text-xs text-slate-400" x-text="q.competency_mapped"></span>
+              <span class="gap-badge font-semibold"
+                :class="q.review_status === 'APPROVED' ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : (q.review_status === 'REJECTED' ? 'border border-red-500/30 bg-red-500/10 text-red-300' : 'border border-ember-500/30 bg-ember-500/10 text-ember-300')"
+                x-text="q.review_status"></span>
+            </div>
+            <div class="flex gap-2">
+              <button @click="updateSmeStatus(q.id, 'APPROVED')" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i>Approve</button>
+              <button @click="updateSmeStatus(q.id, 'NEEDS_REVISION')" class="text-xs px-3 py-1.5 rounded-lg bg-ember-600 hover:bg-ember-500 text-ink-950 font-medium transition-colors flex items-center gap-1"><i data-lucide="pencil" class="w-3 h-3"></i>Flag Edit</button>
+              <button @click="updateSmeStatus(q.id, 'REJECTED')" class="text-xs px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-600 text-white font-medium transition-colors flex items-center gap-1"><i data-lucide="x" class="w-3 h-3"></i>Reject</button>
+            </div>
+          </div>
+          <p class="text-sm text-slate-200 leading-relaxed border-l-2 border-ember-500/30 pl-3" x-text="q.scenario_text"></p>
+          <p class="text-xs">
+            <span class="text-slate-500">Correct answer:</span>
+            <span class="text-emerald-300 font-semibold ml-1" x-text="`${q.correct_option}. ${q.options[q.correct_option]}`"></span>
+          </p>
+        </div>
+      </template>
+      <div x-show="!smeQuestions.length" class="card rounded-2xl p-12 text-center">
+        <i data-lucide="inbox" class="w-10 h-10 text-slate-600 mx-auto mb-3"></i>
+        <p class="text-sm text-slate-400">No questions in the review queue.</p>
+        <button @click="loadSmeQuestions()" class="mt-4 text-xs text-ember-400 hover:text-ember-300">Try refreshing →</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="border-t border-white/5 py-5 mt-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between gap-2 text-[11px] text-slate-600">
+      <span class="flex items-center gap-1.5"><i data-lucide="landmark" class="w-3 h-3"></i>Capacity Building Commission · Government of India</span>
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5"><i data-lucide="shield" class="w-3 h-3"></i>FRAC-aligned</span>
+        <span>·</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="bar-chart" class="w-3 h-3"></i>NSO Standards</span>
+        <span>·</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="globe" class="w-3 h-3"></i>iGOT Karmayogi</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════ LEADERBOARD MODAL ═══════════════ -->
+  <div x-show="showLeaderboard" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    @click.self="showLeaderboard = false"
+    style="background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);">
+    <div class="card rounded-2xl w-full max-w-md p-6 animate-slide-up">
+      <div class="flex justify-between items-center mb-5">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-ember-500/15 flex items-center justify-center"><i data-lucide="trophy" class="w-4 h-4 text-ember-400"></i></div>
+          <h3 class="text-white font-semibold">Leaderboard</h3>
+        </div>
+        <button @click="showLeaderboard = false" class="w-7 h-7 rounded-lg border border-white/8 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors">✕</button>
+      </div>
+      <div class="space-y-2">
+        <template x-for="(l, i) in learners" :key="l.learner_id">
+          <div class="flex items-center gap-3 p-3 rounded-xl transition-all" :class="l.learner_id === selectedLearnerId ? 'bg-ember-500/10 border border-ember-500/30' : 'bg-white/3 border border-transparent'">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" :class="i === 0 ? 'bg-ember-500 text-ink-950' : (i === 1 ? 'bg-slate-300 text-ink-950' : (i === 2 ? 'bg-amber-700 text-white' : 'bg-white/6 text-slate-400'))" x-text="i + 1"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-slate-200 truncate" x-text="l.learner_id === selectedLearnerId ? l.name + ' (You)' : l.name"></p>
+              <p class="text-[10px] text-slate-500 truncate" x-text="`${l.role} · ${l.department?.split(',')[0]}`"></p>
+            </div>
+            <span class="text-xs text-ember-400 font-mono font-semibold" x-text="`${(l.learner_id === selectedLearnerId ? headerKarma : (l.karma_points || 0))} pts`"></span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB-SWITCH WARNING MODAL ═══════════════ -->
+  <div x-show="showTabWarning" class="tab-warn-overlay" x-transition>
+    <div class="card rounded-2xl w-full max-w-sm p-7 text-center animate-slide-up">
+      <div class="w-14 h-14 rounded-2xl bg-red-500/15 border border-red-500/25 flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="alert-triangle" class="w-7 h-7 text-red-400"></i>
+      </div>
+      <h3 class="text-white font-bold text-lg mb-2">Tab Switch Detected!</h3>
+      <p class="text-sm text-slate-400 leading-relaxed mb-2">You navigated away from the quiz tab. This has been recorded.</p>
+      <div class="inline-flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 mb-5">
+        <i data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+        <span x-text="`Total violations: ${tabSwitchCount}`"></span>
+      </div>
+      <button @click="dismissTabWarning()" class="btn-primary w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2">
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>Return to Quiz
+      </button>
+      <p class="text-[11px] text-slate-600 mt-3">Please stay on this tab for the remainder of the assessment.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ iGOT ENROLMENT CONFIRMATION MODAL ═══════════════ -->
+  <div x-show="showEnrolModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4"
+    @click.self="showEnrolModal = false"
+    style="background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none;">
+    <div class="card rounded-2xl max-w-md w-full p-6 space-y-4 border border-emerald-500/40 card-glow-emerald animate-slide-up">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-lg">
+            ✓
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">iGOT Karmayogi Enrolment Synced</h3>
+            <p class="text-[10px] text-slate-400 font-mono">Mission Karmayogi Bharat API Gateway</p>
+          </div>
+        </div>
+        <button @click="showEnrolModal = false" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+      <div class="p-3.5 rounded-xl bg-ink-900 border border-white/6 space-y-2 text-xs">
+        <div class="flex justify-between"><span class="text-slate-400">Course ID:</span><span class="font-mono text-amber-400 font-bold" x-text="enrolResult?.course_id"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Course Name:</span><span class="font-semibold text-white truncate max-w-[210px]" x-text="enrolResult?.course_name"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Assessed Officer:</span><span class="text-slate-200" x-text="enrolResult?.learner_name"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Enrolment Token:</span><span class="font-mono text-emerald-400 font-bold" x-text="enrolResult?.enrolment_id"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Linked Gap Code:</span><span class="font-mono text-sky-400" x-text="enrolResult?.apar_competency_linked"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">APAR Ledger:</span><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold text-[10px]" x-text="enrolResult?.igot_sync_status"></span></div>
+      </div>
+      <div class="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+        <div class="flex items-center gap-2">
+          <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-xs text-amber-300 font-semibold">Continuous Learning Karma:</span>
+        </div>
+        <span class="font-mono font-bold text-amber-400 text-sm" x-text="`+${enrolResult?.karma_credit_awarded || 25} pts`"></span>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" @click="showEnrolModal = false" class="btn-primary w-full py-2.5 rounded-xl text-xs font-semibold">
+          Acknowledge &amp; Return to Learning Journey
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ OFFICIAL MOSPI APAR DOSSIER MODAL (PRINT & PDF) ═══════════════ -->
+  <div x-show="showDossierModal" class="fixed inset-0 z-[80] flex items-center justify-center p-4 overflow-y-auto"
+    @click.self="showDossierModal = false"
+    style="background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none;">
+    <div class="max-w-3xl w-full my-8 bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-300 animate-slide-up">
+      <!-- Top Action Bar (No Print) -->
+      <div class="no-print bg-slate-900 text-white px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Official MoSPI APAR Competency Audit Dossier</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" @click="printAparDossier()" class="btn-primary px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 font-bold shadow-sm">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print / Save PDF</span>
+          </button>
+          <button type="button" @click="showDossierModal = false" class="text-slate-400 hover:text-white px-2 py-1 text-sm">✕</button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="aparDossierPrintArea" class="p-8 space-y-6 text-slate-900 font-sans">
+        <!-- Letterhead -->
+        <div class="text-center border-b-2 border-slate-900 pb-4">
+          <div class="flex items-center justify-center gap-2 mb-1">
+            <span class="text-2xl font-bold font-serif text-slate-900">🏛️ सत्यमेव जयते</span>
+          </div>
+          <h2 class="text-lg font-bold tracking-wide uppercase text-slate-900">Government of India</h2>
+          <h3 class="text-base font-semibold text-slate-800">Ministry of Statistics &amp; Programme Implementation (MoSPI)</h3>
+          <p class="text-xs font-medium text-slate-600">National Statistical Systems Training Academy (NSSTA) · iGOT Karmayogi Augmentation</p>
+          <div class="mt-2.5 inline-block px-3 py-1 rounded bg-slate-100 border border-slate-300 text-[11px] font-mono font-bold text-slate-800">
+            ANNUAL PERFORMANCE APPRAISAL REPORT (APAR) · STATISTICAL COMPETENCY AUDIT DOSSIER
+          </div>
+        </div>
+
+        <!-- Dossier Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="space-y-1">
+            <p><span class="font-semibold text-slate-600">Officer Name:</span> <strong class="text-slate-900 font-bold text-sm" x-text="dossierData?.officer?.name"></strong></p>
+            <p><span class="font-semibold text-slate-600">Cadre / Role:</span> <span class="text-slate-800" x-text="`${dossierData?.officer?.role} (${dossierData?.officer?.cadre})`"></span></p>
+            <p><span class="font-semibold text-slate-600">Department:</span> <span class="text-slate-800" x-text="dossierData?.officer?.department"></span></p>
+            <p><span class="font-semibold text-slate-600">Station / Region:</span> <span class="text-slate-800" x-text="dossierData?.officer?.station"></span></p>
+          </div>
+          <div class="text-right space-y-1">
+            <p><span class="font-semibold text-slate-600">Dossier ID:</span> <strong class="font-mono text-slate-900 font-bold" x-text="dossierData?.dossier_id"></strong></p>
+            <p><span class="font-semibold text-slate-600">Audit Date:</span> <span class="text-slate-800" x-text="dossierData?.issued_at"></span></p>
+            <p><span class="font-semibold text-slate-600">Overall Mastery:</span> <strong class="text-emerald-700 font-bold text-sm" x-text="`${dossierData?.assessment_summary?.average_mastery_percentage || 72}%`"></strong></p>
+            <p><span class="font-semibold text-slate-600">Cumulative Karma:</span> <span class="font-mono font-bold text-amber-700" x-text="`${dossierData?.assessment_summary?.cumulative_karma_points || 2150} pts`"></span></p>
+          </div>
+        </div>
+
+        <!-- 5 Core Pillars Breakdown -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">1. FRAC Statistical Competency Framework Audit</h4>
+          <table class="w-full text-left text-xs border border-slate-300">
+            <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
+              <tr>
+                <th class="p-2 border-r border-slate-300">Code</th>
+                <th class="p-2 border-r border-slate-300">Competency Pillar</th>
+                <th class="p-2 border-r border-slate-300 text-center">Score</th>
+                <th class="p-2 text-center">Proficiency Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="p in (dossierData?.competency_breakdown || [])" :key="p.code">
+                <tr class="border-b border-slate-200">
+                  <td class="p-2 font-mono text-slate-600 border-r border-slate-200" x-text="p.code"></td>
+                  <td class="p-2 font-medium text-slate-800 border-r border-slate-200" x-text="p.name"></td>
+                  <td class="p-2 text-center font-mono font-bold border-r border-slate-200" :class="p.score >= 75 ? 'text-emerald-700' : (p.score >= 60 ? 'text-amber-700' : 'text-rose-700')" x-text="`${p.score}%`"></td>
+                  <td class="p-2 text-center font-semibold text-[11px]" :class="p.status === 'PROFICIENT' ? 'text-emerald-700' : (p.status === 'EXEMPLARY' ? 'text-blue-700' : 'text-rose-700')" x-text="p.status"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Diagnosed Gaps & Root Cause -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">2. Diagnosed Competency Deficiencies &amp; Misconceptions</h4>
+          <div class="space-y-2">
+            <template x-for="g in (dossierData?.critical_misconceptions || [])" :key="g.competency_id">
+              <div class="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs">
+                <div class="flex justify-between items-center mb-1">
+                  <strong class="text-rose-900" x-text="`${g.competency_name} (${g.competency_id})`"></strong>
+                  <span class="px-2 py-0.5 rounded bg-rose-200 text-rose-800 font-mono text-[10px] font-bold" x-text="`Severity: ${g.severity || 'Critical'}`"></span>
+                </div>
+                <p class="text-slate-700 leading-relaxed" x-text="g.diagnostic_summary"></p>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Mandated iGOT Karmayogi Courses -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">3. Mandated iGOT Karmayogi Capacity Building Actions</h4>
+          <div class="space-y-2">
+            <template x-for="c in (dossierData?.mandated_igot_courses || [])" :key="c.course_id">
+              <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs flex justify-between items-center">
+                <div>
+                  <strong class="text-emerald-900 block font-semibold" x-text="`${c.course_title} [${c.course_id}]`"></strong>
+                  <span class="text-slate-600 text-[11px]" x-text="`Provider: ${c.provider} · Duration: ${c.duration_minutes} min`"></span>
+                  <p class="text-slate-700 mt-0.5" x-text="c.justification"></p>
+                </div>
+                <div class="text-right flex-shrink-0 ml-4">
+                  <span class="px-2.5 py-1 rounded bg-emerald-200 text-emerald-900 font-bold font-mono text-[10px]">APAR Mandate: 30 Days</span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Official Signatures & Digital Seal -->
+        <div class="pt-6 border-t-2 border-slate-300 grid grid-cols-3 gap-6 text-center text-xs">
+          <div>
+            <div class="h-10 border-b border-slate-400 mb-1 flex items-end justify-center font-serif italic text-slate-700" x-text="dossierData?.officer?.name || 'Rajesh Sharma'"></div>
+            <p class="font-bold text-slate-800">Assessed Officer Signature</p>
+            <p class="text-[10px] text-slate-500 font-mono">Official Cadre Verified</p>
+          </div>
+          <div class="flex flex-col items-center justify-center">
+            <div class="w-14 h-14 rounded-full border-2 border-dashed border-slate-600 flex flex-col items-center justify-center p-1 text-[9px] font-mono text-slate-700">
+              <span class="font-bold">NSSTA</span>
+              <span>SEAL</span>
+            </div>
+            <p class="font-mono text-[9px] text-slate-500 mt-1" x-text="`SHA256: ${dossierData?.digital_seal_hash}`"></p>
+          </div>
+          <div>
+            <div class="h-10 border-b border-slate-400 mb-1 flex items-end justify-center font-serif italic text-slate-700">Dr. A. K. Sen, ISS</div>
+            <p class="font-bold text-slate-800">Joint Director (Training)</p>
+            <p class="text-[10px] text-slate-500">NSSTA · MoSPI Govt. of India</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ AI ENGINE SETTINGS MODAL ═══════════════ -->
+  <div x-show="showAiSettings" class="fixed inset-0 z-[70] flex items-center justify-center p-4"
+    @click.self="showAiSettings = false"
+    style="background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none;">
+    <div class="card rounded-2xl max-w-md w-full p-6 space-y-4 border border-white/10 animate-slide-up">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-base">
+            ⚙️
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">AI Engine &amp; Hackathon Resilience</h3>
+            <p class="text-[10px] text-slate-400 font-mono">Dual-Engine Architecture</p>
+          </div>
+        </div>
+        <button @click="showAiSettings = false" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="p-3.5 rounded-xl bg-ink-900 border border-white/6 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-300 font-semibold">Active Mode:</span>
+            <span class="gap-badge border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-mono font-bold" x-text="aiEngineShortLabel">MoSPI Engine</span>
+          </div>
+          <p class="text-slate-400 text-[11px] leading-relaxed">
+            StatSkill AI features zero-failure hackathon reliability. It automatically runs our high-precision, domain-grounded offline MoSPI statistical engine with zero network latency, while also supporting live Google Gemini 2.5 Flash when a live API key is configured.
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-slate-300 font-medium">Custom Gemini API Key (Optional for live LLM):</label>
+          <input type="password" x-model="userApiKey" placeholder="AIzaSy... (leave blank for zero-latency MoSPI engine)" class="answer-input text-xs py-2">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
+        <button type="button" @click="saveApiKey()" class="btn-primary px-4 py-2 rounded-xl text-xs font-semibold">
+          Save Configuration
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TOAST ═══════════════ -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] space-y-2 pointer-events-none"></div>
+
+  <!-- ═══════════════ SCRIPT ═══════════════ -->
+  <script>
+    const I18N = {
+      en: {
+        title: "StatSkill AI",
+        sub: "iGOT Karmayogi · MoSPI Govt. of India",
+        badge: "Grand Finale '26",
+        streak: "streak",
+        karma: "karma",
+        steps: ["Ingest Material", "Scenario Assessment", "Diagnostic Report", "Learner Dashboard", "SME Review"],
+        scenario: "Workplace Field Scrutiny Scenario",
+        readScenario: "Read Scenario",
+        stopVoice: "Stop Voice",
+        certain: "Certain",
+        somewhatSure: "Somewhat Sure",
+        guessing: "Guessing",
+        next: "Next Question →",
+        prev: "← Previous",
+        submit: "Submit Assessment",
+        exportDossier: "Export APAR Dossier",
+        enrolIgot: "1-Click iGOT Enrol",
+      },
+      hi: {
+        title: "स्टैटस्किल एआई",
+        sub: "आईजीओटी कर्मयोगी · सांख्यिकी मंत्रालय (MoSPI)",
+        badge: "ग्रैंड फिनाले '26",
+        streak: "दिन स्ट्रीक",
+        karma: "कर्म अंक",
+        steps: ["दस्तावेज़ इनपुट", "कार्यक्षेत्र परिदृश्य", "सक्षमता अंतराल रिपोर्ट", "कर्मयोगी डैशबोर्ड", "विशेषज्ञ समीक्षा"],
+        scenario: "क्षेत्रीय संवीक्षा कार्यस्थल परिदृश्य",
+        readScenario: "परिदृश्य सुनें",
+        stopVoice: "ऑडियो रोकें",
+        certain: "पूर्णतः निश्चित",
+        somewhatSure: "मध्यम निश्चित",
+        guessing: "अनुमान",
+        next: "अगला प्रश्न →",
+        prev: "← पिछला प्रश्न",
+        submit: "मूल्यांकन जमा करें",
+        exportDossier: "APAR डॉसियर निर्यात (PDF)",
+        enrolIgot: "तुरंत नामांकन",
+      },
+      ta: {
+        title: "StatSkill AI",
+        sub: "iGOT கர்மயோகி · புள்ளியியல் அமைச்சகம் (MoSPI)",
+        badge: "கிராண்ட் ஃபினாலே",
+        streak: "நாட்கள்",
+        karma: "கர்மா",
+        steps: ["ஆவண உள்ளீடு", "சூழ்நிலை மதிப்பீடு", "திறன் அறிக்கை", "டாஷ்போர்டு", "தணிக்கை"],
+        scenario: "கள ஆய்வு சூழ்நிலை",
+        readScenario: "சூழ்நிலையைக் கேளுங்கள்",
+        stopVoice: "நிறுத்து",
+        certain: "முழு நம்பிக்கை",
+        somewhatSure: "ஓரளவு",
+        guessing: "ஊகம்",
+        next: "அடுத்த கேள்வி →",
+        prev: "← முந்தையது",
+        submit: "சமர்ப்பிக்கவும்",
+        exportDossier: "APAR ஆவணம் (PDF)",
+        enrolIgot: "iGOT இல் சேரவும்",
+      },
+      te: {
+        title: "StatSkill AI",
+        sub: "iGOT కర్మయోగి · గణాంకాల మంత్రిత్వ శాఖ (MoSPI)",
+        badge: "గ్రాండ్ ఫినాలే",
+        streak: "రోజుల పరంపర",
+        karma: "కర్మ పాయింట్లు",
+        steps: ["పత్రం సమర్పణ", "క్షేత్ర అసెస్‌మెంట్", "నైపుణ్య నివేదిక", "డాష్‌బోర్డ్", "సమీక్ష"],
+        scenario: "క్షేత్ర పరిశీలన పరిస్థితి",
+        readScenario: "వాయిస్ వినండి",
+        stopVoice: "వాయిస్ ఆపు",
+        certain: "ఖచ్చితంగా తెలుసు",
+        somewhatSure: "కొంతవరకు",
+        guessing: "అంచనా",
+        next: "తదుపరి ప్రశ్న →",
+        prev: "← క్రితం ప్రశ్న",
+        submit: "సమర్పించు",
+        exportDossier: "APAR నివేదిక (PDF)",
+        enrolIgot: "iGOT లో చేరండి",
+      },
+      bn: {
+        title: "স্ট্যাটস্কিল এআই",
+        sub: "আইজিওটি কর্মযোগী · পরিসংখ্যান মন্ত্রক (MoSPI)",
+        badge: "গ্র্যান্ড ফিনালে",
+        streak: "দিনের ধারা",
+        karma: "কর্ম পয়েন্ট",
+        steps: ["নথি আপলোড", "পরিস্থিতি মূল্যায়ন", "দক্ষতা ব্যবধান রিপোর্ট", "ড্যাশবোর্ড", "পর্যালোচনা"],
+        scenario: "ক্ষেত্র পর্যবেক্ষণ পরিস্থিতি",
+        readScenario: "পরিস্থিতি শুনুন",
+        stopVoice: "অডিও থামান",
+        certain: "সম্পূর্ণ নিশ্চিত",
+        somewhatSure: "মোটামুটি",
+        guessing: "অনুমান",
+        next: "পরবর্তী প্রশ্ন →",
+        prev: "← পূর্ববর্তী",
+        submit: "জমা দিন",
+        exportDossier: "APAR ডসিয়ার (PDF)",
+        enrolIgot: "iGOT-এ নথিভুক্ত",
+      }
+    };
+
+    function showToast(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toast-container');
+      const icons = { success: 'check-circle', error: 'x-circle', info: 'info' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type} pointer-events-auto`;
+      toast.innerHTML = `<i data-lucide="${icons[type]}" class="w-4 h-4 flex-shrink-0"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons({ el: toast });
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, duration);
+    }
+
+    function statskillApp() {
+      return {
+        // ── Core state ──
+        theme: localStorage.getItem('statskill_theme') || 'dark',
+        activeTab: 'upload',
+        ingestMode: 'preset',
+        showLeaderboard: false,
+        showAnswerKey: false,
+        completedTabs: [],
+        steps: [
+          { id: 'upload',    label: 'Ingest Material'    },
+          { id: 'quiz',      label: 'Scenario Assessment' },
+          { id: 'results',   label: 'Diagnostic Report'  },
+          { id: 'dashboard', label: 'Learner Dashboard'  },
+          { id: 'sme',       label: 'SME Review'         }
+        ],
+        learners: [],
+        selectedLearnerId: 'DEMO-USER-01',
+        materials: [],
+        selectedMaterialId: null,
+        quizConfig: { role: 'Junior Statistical Officer (JSO)', difficulty: 'medium', numQuestions: '5' },
+        currentQuiz: null,
+        currentQIndex: 0,
+        userAnswers: {},
+        isGenerating: false,
+        isSubmitting: false,
+        lastResult: null,
+        dashboardData: null,
+        smeQuestions: [],
+        activeSmeQuizId: null,
+        competencyChartInstance: null,
+        trendChartInstance: null,
+
+        // ── Grand Finale & Bharat Localization State ──
+        isGrandFinaleTour: false,
+        currentLang: 'en',
+        isSpeakingVoice: false,
+        showEnrolModal: false,
+        enrolResult: null,
+        showDossierModal: false,
+        dossierData: null,
+        showAiSettings: false,
+        userApiKey: localStorage.getItem('statskill_user_api_key') || '',
+        fracRadarChartInstance: null,
+        aiEngineShortLabel: 'Autonomous MoSPI',
+        get i18n() { return I18N[this.currentLang] || I18N.en; },
+
+        // ── NEW state ──
+        showContentSelection: false,
+        uploadedMaterialId: null,
+        availableItems: [],
+        selectedContentItem: null,
+        currentQuizMode: 'standard',   // 'standard' | 'mixed' | 'mcq'
+        quizTimeTotal: 0,
+        quizTimeLeft: 0,
+        quizTimerRunning: false,
+        _quizTimerInterval: null,
+        tabSwitchCount: 0,
+        showTabWarning: false,
+        essayUploads: {},
+        completedQuizItems: [], // Track completed quiz IDs for chronological order
+
+        // ── Computed: current question type from generated item, not a hardcoded index rotation ──
+        get currentQType() {
+          const q = this.currentQuestion;
+          const fromApi = (q && q.question_type) ? String(q.question_type).toLowerCase() : '';
+          if (fromApi && fromApi !== 'standard') return fromApi;
+          if (this.currentQuizMode !== 'mixed') return 'mcq';
+          const types = ['mcq', 'true_false', 'fill_blank', 'match', 'short_answer', 'mcq', 'essay', 'mcq'];
+          return types[this.currentQIndex % types.length];
+        },
+
+        // ── Computed: whether current question has a valid answer ──
+        get hasAnswer() {
+          const q = this.currentQuestion;
+          if (!q) return false;
+          const ans = this.userAnswers[q.question_id];
+          if (!ans) return false;
+          const type = this.currentQType;
+          if (type === 'mcq')          return !!ans.selected;
+          if (type === 'true_false')   return !!ans.selected;
+          if (type === 'fill_blank')   return !!(ans.text && ans.text.trim().length > 0);
+          if (type === 'short_answer') return !!(ans.text && ans.text.trim().length > 0);
+          if (type === 'essay')        return !!(ans.text && ans.text.trim().length > 0) || !!ans.fileName;
+          if (type === 'match')        return !!(ans.pairs && Object.values(ans.pairs).some(v => v));
+          return false;
+        },
+
+        // ── Computed: timer display ──
+        get quizTimerDisplay() {
+          const m = Math.floor(this.quizTimeLeft / 60);
+          const s = this.quizTimeLeft % 60;
+          return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        },
+
+        // ── Computed: timer CSS class ──
+        get quizTimerClass() {
+          if (!this.quizTimeTotal) return '';
+          const pct = this.quizTimeLeft / this.quizTimeTotal;
+          if (pct <= 0.10) return 'timer-danger';
+          if (pct <= 0.25) return 'timer-warning';
+          return '';
+        },
+
+        get currentQuestion() {
+          if (!this.currentQuiz || !this.currentQuiz.questions) return null;
+          return this.currentQuiz.questions[this.currentQIndex];
+        },
+
+        get headerKarma() {
+          if (this.lastResult && this.lastResult.total_karma_points != null) return this.lastResult.total_karma_points;
+          return this.dashboardData?.karma_points_earned || 0;
+        },
+
+        get headerStreak() {
+          if (this.lastResult && this.lastResult.learning_streak_days != null) return this.lastResult.learning_streak_days;
+          return this.dashboardData?.learning_streak_days || 0;
+        },
+
+        get confidenceBands() {
+          const reviews = this.lastResult?.question_reviews || [];
+          const bands = [
+            { key: 'High',   label: 'Sure',     bar: 'bg-emerald-500' },
+            { key: 'Medium', label: 'Unsure',   bar: 'bg-ember-500'   },
+            { key: 'Low',    label: 'Guessing', bar: 'bg-red-500'     }
+          ];
+          return bands.map(b => {
+            const items = reviews.filter(r => (r.confidence || '').toLowerCase().startsWith(b.key.toLowerCase().slice(0, 3)) || r.confidence === b.key);
+            const correct = items.filter(r => r.is_correct).length;
+            const pct = items.length ? Math.round((correct / items.length) * 100) : 0;
+            return { label: b.label, count: items.length, pct, bar: b.bar };
+          });
+        },
+
+        // ── Theme ──
+        toggleTheme() {
+          this.theme = this.theme === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('statskill_theme', this.theme);
+          this.applyTheme();
+          if (this.activeTab === 'results') this.renderResultsCharts();
+          this.$nextTick(() => lucide.createIcons());
+        },
+
+        applyTheme() {
+          document.body.classList.toggle('theme-light', this.theme === 'light');
+        },
+
+        // ── Navigation ──
+        goTab(id) {
+          this.activeTab = id;
+          if (id === 'dashboard') this.loadDashboard();
+          if (id === 'sme')       this.loadSmeQuestions();
+          if (id === 'results')   this.$nextTick(() => this.renderResultsCharts());
+          this.$nextTick(() => lucide.createIcons());
+        },
+
+        // ── Init ──
+        async initApp() {
+          this.applyTheme();
+          if (this.userApiKey && this.userApiKey.trim().length > 10) {
+            this.aiEngineShortLabel = 'Gemini 2.5 Flash';
+          }
+          this.setupTabSwitchDetection();
+          await this.loadLearners();
+          await this.loadMaterials();
+          await this.loadDashboard();
+          this.$nextTick(() => lucide.createIcons());
+        },
+
+        // ── Loaders ──
+        async loadLearners() {
+          try {
+            const res = await fetch('/api/learners');
+            this.learners = await res.json();
+            if (this.learners.length > 0) this.selectedLearnerId = this.learners[0].learner_id;
+          } catch (e) { console.error('Failed to load learners', e); }
+        },
+
+        async loadMaterials() {
+          try {
+            const res = await fetch('/api/materials');
+            this.materials = await res.json();
+            if (this.materials.length && !this.selectedMaterialId) this.selectedMaterialId = this.materials[0].material_id;
+          } catch (e) { console.error('Failed to load materials', e); }
+        },
+
+        switchLearner() {
+          this.currentQuiz = null;
+          this.userAnswers = {};
+          this.lastResult = null;
+          this.loadDashboard();
+        },
+
+        // ── File upload → show content selection instead of direct quiz ──
+        async handleFileUpload(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('file', file);
+          showToast('Uploading and processing document…', 'info');
+          try {
+            const res = await fetch('/api/materials/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            await this.loadMaterials();
+            this.selectedMaterialId = data.material_id;
+            this.uploadedMaterialId = data.material_id;
+            const mat = this.materials.find(m => m.material_id === data.material_id) || data;
+            this.generateAvailableItems(mat);
+            this.showContentSelection = true;
+            showToast('Document processed! Choose your quiz format below.', 'success');
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) {
+            showToast('Upload failed: ' + e, 'error');
+          }
+        },
+
+        // ── Content selection helpers ──
+        generateAvailableItems(material) {
+          const tags = (material?.topic_tags && material.topic_tags.length >= 3)
+            ? material.topic_tags
+            : ['General Concepts', 'Core Methods', 'Applied Practice'];
+          const numQ = parseInt(this.quizConfig.numQuestions) || 5;
+          // Mixed: ~2.5 min per Q avg; MCQ: 90s per Q
+          const mixedMin = Math.round(numQ * 2.5);
+          const mcqMin  = Math.round(numQ * 1.5);
+          this.availableItems = [
+            { id: 'quiz-1', label: 'Quiz 1', subtitle: tags[0], type: 'mixed', durationLabel: `~${mixedMin} min` },
+            { id: 'quiz-2', label: 'Quiz 2', subtitle: tags[1], type: 'mixed', durationLabel: `~${mixedMin} min` },
+            { id: 'quiz-3', label: 'Quiz 3', subtitle: tags[2], type: 'mixed', durationLabel: `~${mixedMin} min` },
+            { id: 'mcq-1',  label: 'MCQ 1',  subtitle: tags[0], type: 'mcq',   durationLabel: `~${mcqMin} min`  },
+            { id: 'mcq-2',  label: 'MCQ 2',  subtitle: tags[1], type: 'mcq',   durationLabel: `~${mcqMin} min`  },
+            { id: 'mcq-3',  label: 'MCQ 3',  subtitle: tags[2], type: 'mcq',   durationLabel: `~${mcqMin} min`  },
+          ];
+        },
+
+        async selectAndStartItem(item) {
+          // Enforce chronological order - user must complete quizzes in order
+          const itemIndex = this.availableItems.findIndex(i => i.id === item.id);
+          if (itemIndex > 0 && !this.completedQuizItems.includes(this.availableItems[itemIndex - 1].id)) {
+            showToast('Please complete the previous quiz first!', 'error');
+            return;
+          }
+          
+          this.selectedContentItem = item;
+          this.currentQuizMode = item.type === 'mixed' ? 'mixed' : 'mcq';
+          await this.generateQuiz(this.uploadedMaterialId || this.selectedMaterialId);
+        },
+
+        // ── Generate quiz ──
+        async generateQuiz(materialId = null) {
+          this.isGenerating = true;
+          try {
+            const targetMatId = materialId || this.selectedMaterialId || (this.materials[0] && this.materials[0].material_id);
+            const res = await fetch('/api/quizzes/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                learner_id: this.selectedLearnerId,
+                material_id: targetMatId,
+                role_target: this.quizConfig.role,
+                difficulty: this.quizConfig.difficulty,
+                number_of_questions: parseInt(this.quizConfig.numQuestions),
+                format_type: this.currentQuizMode === 'mixed' ? 'mixed' : 'mcq'
+              })
+            });
+            this.currentQuiz = await res.json();
+            this.currentQIndex = 0;
+            this.userAnswers = {};
+            this.essayUploads = {};
+            this.tabSwitchCount = 0;
+            this.showContentSelection = false;
+            this.activeTab = 'quiz';
+            this.startQuizTimer();
+            // Reset completed quiz items when starting a new quiz
+            if (!this.uploadedMaterialId) {
+              this.completedQuizItems = [];
+            }
+            showToast('Quiz generated! Good luck 🎯', 'success');
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) {
+            showToast('Quiz generation failed: ' + e, 'error');
+          } finally {
+            this.isGenerating = false;
+          }
+        },
+
+        // ── Timer ──
+        startQuizTimer() {
+          this.stopQuizTimer();
+          const questions = this.currentQuiz?.questions || [];
+          let totalSeconds;
+          if (this.currentQuizMode === 'mixed') {
+            totalSeconds = questions.reduce((sum, q, i) => {
+              const t = (q.question_type || ['mcq','true_false','fill_blank','match','short_answer','mcq','essay','mcq'][i % 8]).toLowerCase();
+              if (t === 'essay')        return sum + 420; // 7 min
+              if (t === 'short_answer') return sum + 180; // 3 min
+              if (t === 'match')        return sum + 180; // 3 min
+              return sum + 120; // 2 min for MCQ/T-F/fill-blank
+            }, 0);
+          } else {
+            totalSeconds = questions.length * 90; // 90s per MCQ
+          }
+          this.quizTimeTotal = totalSeconds;
+          this.quizTimeLeft  = totalSeconds;
+          this.quizTimerRunning = true;
+          this._quizTimerInterval = setInterval(() => {
+            if (this.quizTimeLeft > 0) {
+              this.quizTimeLeft--;
+            } else {
+              this.stopQuizTimer();
+              showToast('⏰ Time is up! Submitting your assessment…', 'info');
+              this.submitQuiz();
+            }
+          }, 1000);
+        },
+
+        stopQuizTimer() {
+          if (this._quizTimerInterval) { clearInterval(this._quizTimerInterval); this._quizTimerInterval = null; }
+          this.quizTimerRunning = false;
+        },
+
+        // ── Tab-switch detection ──
+        setupTabSwitchDetection() {
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden && this.activeTab === 'quiz' && this.currentQuiz) {
+              this.tabSwitchCount++;
+              this.showTabWarning = true;
+              this.$nextTick(() => lucide.createIcons());
+            }
+          });
+        },
+
+        dismissTabWarning() {
+          this.showTabWarning = false;
+        },
+
+        // ── Answer setters ──
+        selectOption(questionId, optKey) {
+          // FIX: was auto-setting confidence: 'High' — now null until user explicitly selects
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { selected: optKey, confidence: null };
+          } else {
+            this.userAnswers[questionId].selected = optKey;
+          }
+        },
+
+        isTfSelected(question, val) {
+          if (!question) return false;
+          const selected = this.userAnswers[question.question_id]?.selected;
+          if (selected == null) return false;
+          if (String(selected).toLowerCase() === String(val).toLowerCase()) return true;
+          const opts = question.options || {};
+          const match = Object.entries(opts).find(([k, v]) =>
+            String(k).toLowerCase() === String(val).toLowerCase() ||
+            String(v).toLowerCase() === String(val).toLowerCase()
+          );
+          return !!(match && match[0] === selected);
+        },
+
+        setTfAnswer(questionId, val) {
+          const q = (this.currentQuiz?.questions || []).find(item => item.question_id === questionId);
+          const opts = q?.options || {};
+          let stored = val;
+          const match = Object.entries(opts).find(([k, v]) =>
+            String(k).toLowerCase() === String(val).toLowerCase() ||
+            String(v).toLowerCase() === String(val).toLowerCase()
+          );
+          if (match) stored = match[0];
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { selected: stored, confidence: null };
+          } else {
+            this.userAnswers[questionId].selected = stored;
+          }
+        },
+
+        setTextAnswer(questionId, text) {
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { text, confidence: null };
+          } else {
+            this.userAnswers[questionId].text = text;
+          }
+        },
+
+        setMatchAnswer(questionId, key, value) {
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { pairs: {}, confidence: null };
+          }
+          if (!this.userAnswers[questionId].pairs) {
+            this.userAnswers[questionId].pairs = {};
+          }
+          this.userAnswers[questionId].pairs[key] = value;
+        },
+
+        handleEssayFileUpload(questionId, event) {
+          const file = event.target.files[0];
+          if (!file) return;
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { text: '', confidence: null, file: null, fileName: null };
+          }
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.userAnswers[questionId].file     = e.target.result;
+            this.userAnswers[questionId].fileName = file.name;
+            this.$nextTick(() => lucide.createIcons());
+          };
+          reader.readAsDataURL(file);
+        },
+
+        // ── Match the following helper ──
+        getMatchPairs(question) {
+          const opts = Object.entries(question.options || {});
+          const mid = Math.ceil(opts.length / 2);
+          const left  = opts.slice(0, mid);
+          const right = opts.slice(mid);
+          const rightOptions = right.map(([k, v]) => ({
+            key: k,
+            text: v.length > 45 ? v.substring(0, 45) + '…' : v
+          }));
+          return left.map(([lk, lv]) => ({
+            key: lk,
+            leftText: lv.length > 45 ? lv.substring(0, 45) + '…' : lv,
+            rightOptions
+          }));
+        },
+
+        setConfidence(questionId, conf) {
+          if (!this.userAnswers[questionId]) {
+            this.userAnswers[questionId] = { selected: null, confidence: conf };
+          } else {
+            this.userAnswers[questionId].confidence = conf;
+          }
+        },
+
+        // ── Navigation ──
+        nextQuestion() {
+          if (this.currentQIndex < this.currentQuiz.questions.length - 1) {
+            this.currentQIndex++;
+            this.$nextTick(() => lucide.createIcons());
+          }
+        },
+
+        prevQuestion() {
+          if (this.currentQIndex > 0) {
+            this.currentQIndex--;
+            this.$nextTick(() => lucide.createIcons());
+          }
+        },
+
+        // ── Submit quiz ──
+        async submitQuiz() {
+          this.isSubmitting = true;
+          this.stopQuizTimer();
+          const answersPayload = this.currentQuiz.questions.map((q, i) => {
+            const u = this.userAnswers[q.question_id] || { selected: 'A', confidence: 'Medium' };
+            // For non-MCQ types, derive selected_option best we can
+            let selectedOption = u.selected || 'A';
+            if (u.text && !u.selected) selectedOption = 'A'; // text-based: default to A for scoring
+            return {
+              question_id: q.question_id,
+              selected_option: selectedOption,
+              confidence: u.confidence || 'Medium'
+            };
+          });
+          try {
+            const res = await fetch(`/api/quizzes/${this.currentQuiz.quiz_id}/submit`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ learner_id: this.selectedLearnerId, answers: answersPayload })
+            });
+            this.lastResult = await res.json();
+            // FIX: deduplicate — was pushing even if already present → caused double ✓ icon
+            if (!this.completedTabs.includes('quiz')) {
+              this.completedTabs.push('quiz');
+            }
+            // Mark current quiz item as completed for chronological tracking
+            if (this.selectedContentItem && !this.completedQuizItems.includes(this.selectedContentItem.id)) {
+              this.completedQuizItems.push(this.selectedContentItem.id);
+            }
+            this.activeTab = 'results';
+            await this.loadDashboard();
+            showToast('Assessment submitted! View your results below.', 'success');
+            this.$nextTick(() => { this.renderResultsCharts(); lucide.createIcons(); });
+          } catch (e) {
+            showToast('Submission failed: ' + e, 'error');
+          } finally {
+            this.isSubmitting = false;
+          }
+        },
+
+        // ── Charts ──
+        chartThemeDefaults() {
+          const isLight = this.theme === 'light';
+          return {
+            color: isLight ? '#475569' : '#94a3b8',
+            grid:  isLight ? '#e2e8f0' : '#1e293b',
+            ticks: { color: isLight ? '#475569' : '#94a3b8', font: { size: 10 } }
+          };
+        },
+
+        renderResultsCharts() {
+          if (!this.lastResult) return;
+          const theme = this.chartThemeDefaults();
+
+          const pieCanvas = document.getElementById('competencyBarChart');
+          if (pieCanvas) {
+            if (this.competencyChartInstance) this.competencyChartInstance.destroy();
+            const correct   = this.lastResult.score || 0;
+            const incorrect = (this.lastResult.total_questions || 0) - correct;
+            this.competencyChartInstance = new Chart(pieCanvas, {
+              type: 'doughnut',
+              data: { labels: ['Correct','Incorrect'], datasets: [{ data: [correct, incorrect], backgroundColor: ['#10B981','#EF4444'], borderWidth: 0, hoverOffset: 4 }] },
+              options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}` } } } }
+            });
+          }
+
+          const trendCanvas = document.getElementById('scoreTrendChart');
+          if (trendCanvas && this.lastResult.competency_breakdown) {
+            if (this.trendChartInstance) this.trendChartInstance.destroy();
+            const labels = this.lastResult.competency_breakdown.map(c => c.competency_name.split(' ')[0]);
+            const data   = this.lastResult.competency_breakdown.map(c => c.percentage);
+            const colors = data.map(v => v >= 70 ? '#10B981' : (v >= 50 ? '#F59E0B' : '#EF4444'));
+            this.trendChartInstance = new Chart(trendCanvas, {
+              type: 'bar',
+              data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 6, barPercentage: 0.5 }] },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { beginAtZero: true, max: 100, ticks: theme.ticks, grid: { color: theme.grid } },
+                  x: { ticks: theme.ticks, grid: { display: false } }
+                }
+              }
+            });
+          }
+
+          // FRAC Multi-Dimensional Competency Radar Chart
+          const radarCanvas = document.getElementById('fracRadarChart');
+          if (radarCanvas) {
+            if (this.fracRadarChartInstance) this.fracRadarChartInstance.destroy();
+            const breakdown = this.lastResult.competency_breakdown || [];
+            const rLabels = breakdown.length 
+              ? breakdown.map(c => c.competency_name.replace('MoSPI Guidelines', '').split('&')[0].trim().slice(0, 18))
+              : ['Methodology', 'Scrutiny', 'Outliers', 'Non-Sampling', 'Standards'];
+            const rData = breakdown.length ? breakdown.map(c => c.percentage) : [82, 54, 68, 76, 88];
+            this.fracRadarChartInstance = new Chart(radarCanvas, {
+              type: 'radar',
+              data: {
+                labels: rLabels,
+                datasets: [
+                  {
+                    label: 'Current Mastery (%)',
+                    data: rData,
+                    backgroundColor: 'rgba(245, 158, 11, 0.22)',
+                    borderColor: '#f59e0b',
+                    pointBackgroundColor: '#fbbf24',
+                    pointBorderColor: '#fff',
+                    borderWidth: 2,
+                    pointRadius: 4
+                  },
+                  {
+                    label: 'MoSPI Benchmark (75%)',
+                    data: rLabels.map(() => 75),
+                    borderColor: 'rgba(148, 163, 184, 0.45)',
+                    borderDash: [4, 4],
+                    fill: false,
+                    borderWidth: 1.5,
+                    pointRadius: 0
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  r: {
+                    min: 0,
+                    max: 100,
+                    ticks: { display: false, stepSize: 25 },
+                    grid: { color: theme.grid },
+                    angleLines: { color: theme.grid },
+                    pointLabels: { color: theme.color, font: { size: 10, weight: '500' } }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { boxWidth: 10, color: theme.color, font: { size: 10 } }
+                  }
+                }
+              }
+            });
+          }
+        },
+
+        // ── Dashboard & SME ──
+        async loadDashboard() {
+          try {
+            const res = await fetch(`/api/learners/${this.selectedLearnerId}/dashboard`);
+            this.dashboardData = await res.json();
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) { console.error('Failed to load dashboard', e); }
+        },
+
+        async loadSmeQuestions(quizId = null) {
+          try {
+            const targetQuizId = quizId || this.lastResult?.quiz_id || this.currentQuiz?.quiz_id || (this.dashboardData?.recent_attempts?.[0]?.quiz_id);
+            this.activeSmeQuizId = targetQuizId || null;
+            const url = targetQuizId ? `/api/sme-review/questions?quiz_id=${targetQuizId}` : '/api/sme-review/questions';
+            const res = await fetch(url);
+            this.smeQuestions = await res.json();
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) { console.error('Failed to load SME questions', e); }
+        },
+
+        async updateSmeStatus(questionId, status) {
+          try {
+            await fetch(`/api/sme-review/questions/${questionId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ review_status: status })
+            });
+            const labels = { APPROVED: 'Approved ✓', NEEDS_REVISION: 'Flagged for revision', REJECTED: 'Rejected ✗' };
+            const types  = { APPROVED: 'success', NEEDS_REVISION: 'info', REJECTED: 'error' };
+            showToast(labels[status] || status, types[status] || 'info');
+            await this.loadSmeQuestions();
+          } catch (e) { showToast('Failed to update status: ' + e, 'error'); }
+        },
+
+        // ═══════════════ GRAND FINALE WINNING METHODS ═══════════════
+        switchLanguage() {
+          const lang = this.currentLang;
+          const dict = I18N[lang] || I18N.en;
+          if (this.steps && this.steps.length >= 5) {
+            this.steps[0].label = dict.steps[0];
+            this.steps[1].label = dict.steps[1];
+            this.steps[2].label = dict.steps[2];
+            this.steps[3].label = dict.steps[3];
+            this.steps[4].label = dict.steps[4];
+          }
+          showToast(`Display Language Switched: ${lang.toUpperCase()}`, 'info');
+          this.$nextTick(() => lucide.createIcons());
+        },
+
+        async startGrandFinaleDemo() {
+          this.isGrandFinaleTour = true;
+          // Set Rajesh Sharma (JSO persona)
+          const jso = this.learners.find(l => (l.role || '').includes('Junior Statistical Officer')) || this.learners[0];
+          if (jso) this.selectedLearnerId = jso.learner_id;
+
+          // Select NSSO 79th Round manual
+          if (this.materials.length) {
+            this.selectedMaterialId = this.materials[0].material_id;
+          }
+
+          showToast('🎯 Grand Finale Demo activated: Loading MoSPI Field Officer Scrutiny Case Study...', 'info');
+
+          // Direct generate assessment
+          this.isGenerating = true;
+          try {
+            const res = await fetch('/api/quizzes/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                learner_id: this.selectedLearnerId,
+                material_id: this.selectedMaterialId,
+                title: 'NSSO 79th Round: Field Scrutiny & CAPI Validation',
+                number_of_questions: 5,
+                difficulty: 'medium',
+                role_target: 'Junior Statistical Officer (JSO)'
+              })
+            });
+            this.currentQuiz = await res.json();
+            this.currentQIndex = 0;
+            this.userAnswers = {};
+            this.activeTab = 'quiz';
+            showToast('Scenario Quiz loaded! Click "Read Scenario" to listen or click "Auto-Submit Judge Scenario" to inspect diagnostic gap results.', 'success');
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) {
+            showToast('Demo generation error: ' + e, 'error');
+          } finally {
+            this.isGenerating = false;
+          }
+        },
+
+        async autoFillJudgeDemoAnswers() {
+          if (!this.currentQuiz || !this.currentQuiz.questions) return;
+          showToast('Simulating field officer responses (Mastered + High-Confidence Misconception)...', 'info');
+
+          // 3 correct, 2 wrong with High confidence to demonstrate Bloom's misconception diagnosis
+          this.currentQuiz.questions.forEach((q, idx) => {
+            const opts = Object.keys(q.options || { A: '', B: '', C: '', D: '' });
+            if (idx < 3) {
+              this.userAnswers[q.question_id] = { selected: q.correct_option || opts[0], confidence: 'High' };
+            } else {
+              const wrongOpts = opts.filter(k => k !== q.correct_option);
+              this.userAnswers[q.question_id] = { selected: wrongOpts[0] || 'B', confidence: 'High' };
+            }
+          });
+
+          await this.submitQuiz();
+        },
+
+        toggleScenarioVoice() {
+          if (!('speechSynthesis' in window)) {
+            showToast('Web Speech API not supported in this browser.', 'error');
+            return;
+          }
+          if (this.isSpeakingVoice) {
+            window.speechSynthesis.cancel();
+            this.isSpeakingVoice = false;
+            return;
+          }
+
+          const scenario = this.currentQuestion?.scenario_text;
+          if (!scenario) return;
+
+          const utterance = new SpeechSynthesisUtterance(scenario);
+          utterance.lang = this.currentLang === 'hi' ? 'hi-IN' : 'en-IN';
+          utterance.rate = 0.95;
+          utterance.pitch = 1.0;
+
+          utterance.onstart = () => { this.isSpeakingVoice = true; };
+          utterance.onend = () => { this.isSpeakingVoice = false; };
+          utterance.onerror = () => { this.isSpeakingVoice = false; };
+
+          window.speechSynthesis.speak(utterance);
+        },
+
+        async enrolInCourse(rec) {
+          try {
+            showToast(`Initiating direct iGOT Karmayogi enrolment for ${rec.course_id}…`, 'info');
+            const res = await fetch(`/api/courses/${rec.course_id}/enrol`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                learner_id: this.selectedLearnerId,
+                competency_id: rec.target_gap_addressed || 'OSS-STAT-02'
+              })
+            });
+            const data = await res.json();
+            this.enrolResult = data;
+            this.showEnrolModal = true;
+            await this.loadDashboard();
+            showToast('✓ Enrolled in iGOT Karmayogi with APAR credit link!', 'success');
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) {
+            showToast('Enrolment error: ' + e, 'error');
+          }
+        },
+
+        async openAparDossierModal() {
+          try {
+            showToast('Compiling official MoSPI & NSSTA APAR Competency Dossier…', 'info');
+            const res = await fetch(`/api/learners/${this.selectedLearnerId}/dossier`);
+            this.dossierData = await res.json();
+            this.showDossierModal = true;
+            this.$nextTick(() => lucide.createIcons());
+          } catch (e) {
+            showToast('Failed to load APAR Dossier: ' + e, 'error');
+          }
+        },
+
+        printAparDossier() {
+          window.print();
+        },
+
+        saveApiKey() {
+          if (this.userApiKey && this.userApiKey.trim().length > 10) {
+            localStorage.setItem('statskill_user_api_key', this.userApiKey.trim());
+            this.aiEngineShortLabel = 'Gemini 2.5 Flash';
+            showToast('Gemini API key configured for live generative testing.', 'success');
+          } else {
+            localStorage.removeItem('statskill_user_api_key');
+            this.aiEngineShortLabel = 'Autonomous MoSPI';
+            showToast('Switched to Autonomous MoSPI Statistical Engine (Zero Latency).', 'info');
+          }
+          this.showAiSettings = false;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

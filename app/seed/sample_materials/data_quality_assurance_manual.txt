@@ -1,0 +1,17 @@
+HANDBOOK ON DATA QUALITY ASSURANCE & AUDIT TRAILS FOR OFFICIAL STATISTICS
+National Statistical Systems Training Academy (NSSTA)
+
+1. QUALITY ASSURANCE FRAMEWORK
+Data quality in the Official Statistical System is evaluated across six core dimensions: Relevance, Accuracy, Timeliness, Accessibility, Comparability, and Coherence.
+
+2. CAPI (COMPUTER-ASSISTED PERSONAL INTERVIEWING) VALIDATION RULES
+- Hard Checks: Unresolvable logical impossibilities (e.g., child age 8 listed as parent of individual age 25). The tablet interface blocks form progression until rectified.
+- Soft Checks: Plausible but unusual values (e.g., monthly food expenditure exceeding INR 5,00,000 for a rural household). Requires the investigator to input a mandatory text remark explaining the circumstance before proceeding.
+
+3. SUPERVISORY AUDIT & RE-INTERVIEW PROTOCOL
+- Independent Sub-sampling: Supervisory Officers must independently re-interview a randomly selected 5% sub-sample of households within 48 hours of primary data collection.
+- Index of Inconsistency (IoI): For categorical variables, an IoI score greater than 20% indicates significant enumerator conditioning or ambiguous question phrasing and requires immediate retraining.
+
+4. MISSING DATA & IMPUTATION HIERARCHY
+- Item Non-Response: When single variables are omitted, hot-deck donor matching within the same stratum is preferred over simple mean imputation to avoid artificial variance deflation.
+- Unit Non-Response: Unit non-response adjustment factors must be incorporated into sampling weights at the post-stratification stage.

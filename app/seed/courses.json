@@ -1,0 +1,122 @@
+[
+  {
+    "course_id": "IGOT-STAT-101",
+    "course_name": "Fundamentals of Survey Sampling & Frame Design",
+    "description": "Master multistage stratified random sampling, cluster weight allocation, and PPS techniques used across national socioeconomic surveys.",
+    "competency_ids": ["OSS-STAT-01"],
+    "level": "intermediate",
+    "language": "English",
+    "duration_minutes": 60,
+    "provider": "National Statistical Systems Training Academy (NSSTA)",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-101",
+    "igot_course_id": "igot.nssta.sampling.101"
+  },
+  {
+    "course_id": "IGOT-STAT-102",
+    "course_name": "Field Scrutiny, Validation Rules & CAPI Protocols",
+    "description": "Practical workflows for inspecting field schedules, detecting cross-schedule contradictions, and ensuring high-fidelity data capture.",
+    "competency_ids": ["OSS-STAT-02", "OSS-STAT-05"],
+    "level": "intermediate",
+    "language": "English",
+    "duration_minutes": 45,
+    "provider": "MoSPI Field Operations Division",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-102",
+    "igot_course_id": "igot.mospi.scrutiny.102"
+  },
+  {
+    "course_id": "IGOT-STAT-103",
+    "course_name": "Outlier Treatment & Robust Statistical Imputation",
+    "description": "In-depth treatment of extreme survey values, Cook's distance, cold-deck vs hot-deck imputation, and sensitivity testing.",
+    "competency_ids": ["OSS-STAT-03"],
+    "level": "advanced",
+    "language": "English",
+    "duration_minutes": 90,
+    "provider": "Indian Statistical Institute (ISI) & NSSTA",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-103",
+    "igot_course_id": "igot.isi.outliers.103"
+  },
+  {
+    "course_id": "IGOT-STAT-104",
+    "course_name": "Non-Sampling Error Prevention in Household Surveys",
+    "description": "Tactics for reducing respondent recall lapses, non-response conversion strategies, and interviewer bias minimization.",
+    "competency_ids": ["OSS-STAT-04"],
+    "level": "intermediate",
+    "language": "Hindi / English",
+    "duration_minutes": 45,
+    "provider": "NITI Aayog & MoSPI",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-104",
+    "igot_course_id": "igot.niti.nonsampling.104"
+  },
+  {
+    "course_id": "IGOT-STAT-105",
+    "course_name": "Quality Assurance & Supervisory Re-Interview Framework",
+    "description": "Step-by-step guidance on setting up supervisory audit sampling, independent re-interviews, and automated data validation rules.",
+    "competency_ids": ["OSS-STAT-05"],
+    "level": "intermediate",
+    "language": "English",
+    "duration_minutes": 50,
+    "provider": "Capacity Building Commission (CBC)",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-105",
+    "igot_course_id": "igot.cbc.quality.105"
+  },
+  {
+    "course_id": "IGOT-STAT-106",
+    "course_name": "MoSPI Classification Standards: NIC, NCO & NDSAP",
+    "description": "Overview of standard enterprise and occupational classifications (NIC 2008, NCO 2015) and open data sharing compliance.",
+    "competency_ids": ["OSS-STAT-06"],
+    "level": "basic",
+    "language": "English",
+    "duration_minutes": 35,
+    "provider": "MoSPI Standards Division",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-106",
+    "igot_course_id": "igot.mospi.standards.106"
+  },
+  {
+    "course_id": "IGOT-STAT-107",
+    "course_name": "Data Privacy & Legal Ethics under Statistics Act 2008",
+    "description": "Essential legal mandates, handling confidential respondent identifiers, anonymization techniques, and data security norms.",
+    "competency_ids": ["OSS-STAT-07"],
+    "level": "basic",
+    "language": "English",
+    "duration_minutes": 40,
+    "provider": "National Statistical Commission (NSC)",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-107",
+    "igot_course_id": "igot.nsc.privacy.107"
+  },
+  {
+    "course_id": "IGOT-STAT-108",
+    "course_name": "Price Statistics & Consumer Price Index (CPI) Compilation",
+    "description": "Comprehensive guide on market quotation collection, geometric mean aggregation, weighting diagrams, and inflation indexation.",
+    "competency_ids": ["OSS-STAT-08"],
+    "level": "advanced",
+    "language": "English",
+    "duration_minutes": 75,
+    "provider": "NSSTA & Economic Statistics Division",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-108",
+    "igot_course_id": "igot.nssta.cpi.108"
+  },
+  {
+    "course_id": "IGOT-STAT-109",
+    "course_name": "Gross State Domestic Product (GSDP) & State Accounts",
+    "description": "Practical methodology for calculating state-level value added across agriculture, industry, and tertiary services.",
+    "competency_ids": ["OSS-STAT-09"],
+    "level": "advanced",
+    "language": "English",
+    "duration_minutes": 90,
+    "provider": "National Accounts Division (NAD)",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-109",
+    "igot_course_id": "igot.nad.gsdp.109"
+  },
+  {
+    "course_id": "IGOT-STAT-110",
+    "course_name": "Official Statistical Communication & Visual Storytelling",
+    "description": "Transforming complex demographic surveys into clear infographics, charts, and public reports for policymakers and citizens.",
+    "competency_ids": ["OSS-STAT-10"],
+    "level": "basic",
+    "language": "English",
+    "duration_minutes": 30,
+    "provider": "iGOT Karmayogi & NSSTA",
+    "course_url": "https://igotkarmayogi.gov.in/course/IGOT-STAT-110",
+    "igot_course_id": "igot.nssta.viz.110"
+  }
+]

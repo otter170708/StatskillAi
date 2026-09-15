@@ -1,0 +1,82 @@
+[
+  {
+    "learner_id": "DEMO-USER-01",
+    "name": "Rajesh Sharma",
+    "role": "Junior Statistical Officer (JSO)",
+    "department": "MoSPI Field Operations Division (FOD), Regional Office",
+    "experience_level": "intermediate",
+    "preferred_language": "English"
+  },
+  {
+    "learner_id": "DEMO-USER-02",
+    "name": "Priya Verma",
+    "role": "Statistical Assistant",
+    "department": "State Directorate of Economics and Statistics (DES)",
+    "experience_level": "beginner",
+    "preferred_language": "Hindi / English"
+  },
+  {
+    "learner_id": "DEMO-USER-03",
+    "name": "Amit Patel",
+    "role": "Senior Data Analyst",
+    "department": "National Accounts Division (NAD), New Delhi",
+    "experience_level": "advanced",
+    "preferred_language": "English"
+  },
+  {
+    "learner_id": "DEMO-USER-04",
+    "name": "Sunita Rao",
+    "role": "Junior Statistical Officer (JSO)",
+    "department": "MoSPI FOD, Sub-Regional Office",
+    "experience_level": "beginner",
+    "preferred_language": "English / Telugu"
+  },
+  {
+    "learner_id": "DEMO-USER-05",
+    "name": "Manoj Kumar",
+    "role": "Statistical Assistant",
+    "department": "State Directorate of Economics and Statistics (DES), Patna",
+    "experience_level": "intermediate",
+    "preferred_language": "Hindi"
+  },
+  {
+    "learner_id": "DEMO-USER-06",
+    "name": "Dr. Ananya Sen",
+    "role": "Agricultural Statistical Officer",
+    "department": "Department of Agriculture & Farmers Welfare, Directorate of Economics & Statistics",
+    "experience_level": "advanced",
+    "preferred_language": "English"
+  },
+  {
+    "learner_id": "DEMO-USER-07",
+    "name": "Vikram Malhotra",
+    "role": "Price & Index Statistician (CPI/WPI)",
+    "department": "Price Statistics Division (PSD), MoSPI, New Delhi",
+    "experience_level": "intermediate",
+    "preferred_language": "English"
+  },
+  {
+    "learner_id": "DEMO-USER-08",
+    "name": "Kavita Deshmukh",
+    "role": "Health & Demographic Data Analyst",
+    "department": "National Family Health Survey (NFHS), MoHFW",
+    "experience_level": "intermediate",
+    "preferred_language": "English / Marathi"
+  },
+  {
+    "learner_id": "DEMO-USER-09",
+    "name": "Tariq Ahmed",
+    "role": "Industrial Statistics Investigator",
+    "department": "Annual Survey of Industries (ASI), Industrial Statistics Wing, Kolkata",
+    "experience_level": "beginner",
+    "preferred_language": "English / Urdu"
+  },
+  {
+    "learner_id": "DEMO-USER-10",
+    "name": "Neha Gupta",
+    "role": "Data Science & Survey IT Specialist",
+    "department": "Computer Centre & Digital Infrastructure, MoSPI",
+    "experience_level": "advanced",
+    "preferred_language": "English / Hindi"
+  }
+]

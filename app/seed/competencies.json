@@ -1,0 +1,72 @@
+[
+  {
+    "competency_id": "OSS-STAT-01",
+    "competency_name": "Survey Methodology & Sampling Frame Design",
+    "description": "Understanding probability proportional to size (PPS), stratified multistage sampling, and frame update protocols.",
+    "level": "intermediate",
+    "domain": "Knowledge"
+  },
+  {
+    "competency_id": "OSS-STAT-02",
+    "competency_name": "Field Scrutiny & Schedule Validation",
+    "description": "Techniques for cross-checking survey schedules on-site, internal consistency validation, and discrepancy resolution.",
+    "level": "intermediate",
+    "domain": "Functional"
+  },
+  {
+    "competency_id": "OSS-STAT-03",
+    "competency_name": "Outlier Detection & Imputation Techniques",
+    "description": "Identifying extreme non-sampling errors, hot-deck imputation, mean substitution limits, and Cook's distance analysis.",
+    "level": "advanced",
+    "domain": "Functional"
+  },
+  {
+    "competency_id": "OSS-STAT-04",
+    "competency_name": "Non-Sampling Error Minimization",
+    "description": "Mitigating non-response bias, respondent fatigue, recall lapse, and enumerator conditioning in longitudinal surveys.",
+    "level": "intermediate",
+    "domain": "Functional"
+  },
+  {
+    "competency_id": "OSS-STAT-05",
+    "competency_name": "Data Quality Assurance & Audit Trails",
+    "description": "Implementing supervisory re-interview protocols, digital audit logging, and computer-assisted personal interview (CAPI) QA.",
+    "level": "intermediate",
+    "domain": "Functional"
+  },
+  {
+    "competency_id": "OSS-STAT-06",
+    "competency_name": "Official Statistics Standards & MoSPI Guidelines",
+    "description": "Adherence to National Data Sharing and Accessibility Policy (NDSAP) and MoSPI classification codes (NIC, NCO).",
+    "level": "basic",
+    "domain": "Behavioral"
+  },
+  {
+    "competency_id": "OSS-STAT-07",
+    "competency_name": "Data Privacy, Confidentiality & Anonymization",
+    "description": "Legal protections under the Collection of Statistics Act 2008, k-anonymity, differential privacy, and microdata masking.",
+    "level": "basic",
+    "domain": "Behavioral"
+  },
+  {
+    "competency_id": "OSS-STAT-08",
+    "competency_name": "Consumer Price Index & Index Numbers Compilation",
+    "description": "Laspeyres/Paasche formula application, item basket weighting, geometric mean compilation, and base year revisions.",
+    "level": "advanced",
+    "domain": "Knowledge"
+  },
+  {
+    "competency_id": "OSS-STAT-09",
+    "competency_name": "National Accounts & Gross State Domestic Product (GSDP)",
+    "description": "System of National Accounts (SNA 2008) principles, gross value added (GVA) compilation, and deflator calculations.",
+    "level": "advanced",
+    "domain": "Knowledge"
+  },
+  {
+    "competency_id": "OSS-STAT-10",
+    "competency_name": "Statistical Dissemination & Dashboard Visualization",
+    "description": "Presenting complex demographic and macroeconomic findings through clear visual charts, metadata notes, and open APIs.",
+    "level": "basic",
+    "domain": "Functional"
+  }
+]
