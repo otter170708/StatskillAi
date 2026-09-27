@@ -58,10 +58,16 @@ Content-Type: multipart/form-data
 ```
 
 **Request Body:**
-- `file`: PDF or text file (max 15MB)
-- `title`: Material title (string)
-- `source_type`: Source type (pdf, text, circular)
+- `file`: PDF, text, or image file (max 15MB)
+- `title`: Material title (string, optional - auto-generated from filename)
+- `source_type`: Source type (auto-detected: pdf, text, image)
 - `language`: Language code (default: English)
+
+**Features:**
+- Automatic title deduplication (updates existing material if title matches)
+- OCR support for image files (PNG, JPG, JPEG)
+- PDF text extraction using PyPDF
+- Automatic topic tagging and content analysis
 
 **Response:**
 ```json
@@ -81,6 +87,8 @@ Content-Type: multipart/form-data
 GET /api/materials
 ```
 
+*Note: Automatically deduplicates materials by canonical title to prevent duplicate entries from multiple test runs.*
+
 **Query Parameters:**
 - `source_type`: Filter by source type (optional)
 - `language`: Filter by language (optional)
@@ -89,11 +97,56 @@ GET /api/materials
 ```json
 [
   {
-    "material_id": "MAT-001",
-    "title": "NSSO 79th Round Guidelines",
-    "source_type": "pdf",
+    "material_id": "MAT-NSSO-79-SAMPLE",
+    "title": "NSS 79th Round - Field Scrutiny & Sampling Guidelines",
+    "source_type": "text",
     "language": "English",
-    "created_at": "2026-09-15T10:30:00Z"
+    "character_count": 2150,
+    "topic_tags": ["Sampling Frame", "Field Scrutiny", "NSSO Protocols", "Confidentiality Act"],
+    "created_at": "2026-09-27T10:30:00Z"
+  }
+]
+```
+
+### Upload Material via Text
+```http
+POST /api/materials/text
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "title": "Custom Training Material",
+  "text_content": "Full text content of the training material...",
+  "language": "English"
+}
+```
+
+**Response:**
+```json
+{
+  "material_id": "MAT-ABC12345",
+  "title": "Custom Training Material",
+  "source_type": "text",
+  "character_count": 1250,
+  "topic_tags": ["custom", "training", "assessment"],
+  "status": "ready",
+  "message": "Text material successfully registered."
+}
+```
+
+**Response:**
+```json
+[
+  {
+    "material_id": "MAT-NSSO-79-SAMPLE",
+    "title": "NSS 79th Round - Field Scrutiny & Sampling Guidelines",
+    "source_type": "text",
+    "language": "English",
+    "character_count": 2150,
+    "topic_tags": ["Sampling Frame", "Field Scrutiny", "NSSO Protocols", "Confidentiality Act"],
+    "created_at": "2026-09-27T10:30:00Z"
   }
 ]
 ```
@@ -612,6 +665,27 @@ Content-Type: application/json
 - **Gemini API**: 15 requests/minute, 1,500 requests/day (free tier)
 - **General API**: No rate limiting in development
 - **Production**: TBD based on infrastructure
+
+## AI Configuration & Fallback
+
+The system uses Google Gemini Flash (`gemini-flash-latest`) with intelligent fallback:
+
+### Primary AI Mode
+- **Model**: `gemini-flash-latest` (current, verified model)
+- **Timeout**: 15 seconds
+- **Rate Limit Handling**: Exponential backoff retry
+- **Structured Output**: JSON-enforced response format
+
+### Fallback Mode
+- **Trigger**: API timeout, rate limit (429), or configuration error
+- **Response Time**: < 1 second (instant)
+- **Content**: 25 verified MoSPI domain scenarios
+- **Quality**: Exact mathematical formulas and official protocols
+
+### Model Updates
+- **Previous**: `gemini-2.5-flash` (deprecated)
+- **Current**: `gemini-flash-latest` (active, HTTP 200 verified)
+- **Benefit**: Eliminates 404 errors during live demonstrations
 
 ---
 

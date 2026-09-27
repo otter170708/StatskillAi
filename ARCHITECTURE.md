@@ -83,11 +83,11 @@ CORSMiddleware (allow_origins=["*"])
 - `sme_review.py`: SME review workflow
 
 #### Service Modules
-- `ai_service.py`: AI-powered question generation
+- `ai_service.py`: AI-powered question generation with Gemini Flash integration
 - `diagnostic_engine.py`: Competency gap analysis
-- `document_service.py`: PDF/text processing
+- `document_service.py`: PDF/text/image processing with OCR support
 - `recsys_service.py`: Course recommendation algorithm
-- `seed_service.py`: Database initialization
+- `seed_service.py`: Database initialization with 6 official MoSPI manuals
 
 ### 4. AI Engine
 
@@ -103,19 +103,27 @@ AIService Class
 
 **Key Features:**
 - Structured JSON output enforcement
-- Rate limiting with exponential backoff
+- Rate limiting with exponential backoff (15-second timeout)
 - Material-based content extraction
 - Multi-format question generation (MCQ, True/False, etc.)
 - Bloom's taxonomy alignment
+- OCR support for image files
+- Automatic title deduplication
+
+**Current Model Configuration:**
+- **Model**: `gemini-flash-latest` (replaces deprecated `gemini-2.5-flash`)
+- **Provider**: Google AI Studio API
+- **Rate Limits**: 15 requests/minute, 1,500 requests/day (free tier)
+- **Timeout**: 15 seconds with automatic fallback
 
 **Fallback Strategy:**
 ```
-Primary: Gemini 2.5 Flash API
+Primary: Gemini Flash Latest API
 ├── Success: Return AI-generated questions
-└── Failure: Local material-based generation
+└── Failure: Local material-based generation (< 1 second)
     ├── Extract chunks from uploaded material
     ├── Generate MCQs from content
-    └── Fallback to domain-specific questions
+    └── Fallback to 25 verified MoSPI domain scenarios
 ```
 
 ### 5. Data Layer
@@ -152,13 +160,15 @@ Competency (1) ──── (N) Course
 
 ### 1. Material Upload & Quiz Generation
 ```
-User Uploads PDF
+User Uploads PDF/Text/Image
     ↓
-Document Service (PyPDF extraction)
+Document Service (PyPDF extraction / OCR for images)
+    ↓
+Title Deduplication Check (update existing if title matches)
     ↓
 AI Service (Material chunking)
     ↓
-Gemini API (Question generation)
+Gemini API (Question generation with 15s timeout)
     ↓
 Validation & Formatting
     ↓
@@ -203,10 +213,12 @@ Karma Points Award (Gamification)
 - **Error Handling**: Generic error messages (no sensitive data exposure)
 
 ### Data Security
-- **API Key Management**: Environment variable storage
-- **File Upload Validation**: Size limits (15MB), type restrictions
+- **API Key Management**: Environment variable storage with `.gitignore` protection
+- **Credential Security**: `.env` file untracked from Git, `.env.example` as template only
+- **File Upload Validation**: Size limits (15MB), type restrictions (PDF, text, images)
 - **Session Management**: Stateless API design
 - **Password Security**: Not applicable (government SSO integration planned)
+- **Git Safety**: `.gitignore` prevents accidental credential commits
 
 ## Performance Optimization
 
@@ -248,6 +260,13 @@ Karma Points Award (Gamification)
 - **API Health Endpoint**: `/api/health`
 - **Database Connectivity**: Connection validation
 - **AI Service Status**: API availability check
+
+### Automated Testing
+- **Test Suite**: 19-step comprehensive automated test coverage
+- **End-to-End Validation**: Material upload → quiz generation → diagnosis → recommendations
+- **SIH Compliance**: Red flag mitigation verification
+- **Performance Testing**: 15-second timeout validation
+- **Data Integrity**: Deduplication and consistency checks
 
 ### Metrics (Planned)
 - **Response Times**: API endpoint performance
@@ -325,11 +344,13 @@ Stage 3: Production optimization
 - Perfect for single-page applications
 - No build step required
 
-### Why Gemini 2.5 Flash?
+### Why Gemini Flash Latest?
 - Fast response times for real-time generation
-- Strong free tier for development
-- Structured output support
+- Strong free tier for development (15 req/min, 1500 req/day)
+- Structured output support with JSON enforcement
 - Good understanding of technical content
+- Current active model (replaces deprecated gemini-2.5-flash)
+- 15-second timeout with instant fallback for reliability
 
 ### Why SQLite for Development?
 - Zero configuration required
